@@ -1,0 +1,14 @@
+@keyframes bounce-light-smooth {
+    0%, 100% {
+        transform: translateY(-.5%);
+        animation-timing-function: ease-in-out;
+    }
+    50% {
+        transform: translateY(0);
+        animation-timing-function: ease-in-out;
+    }
+}
+
+.hover\:animate-bounce-light-smooth:hover {
+    animation: bounce-light-smooth 1.2s infinite;
+}

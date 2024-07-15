@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import "../animation.css";
 
 export default function Post({posts}) {
 
@@ -10,7 +11,7 @@ export default function Post({posts}) {
         <>
             {
                 posts.map((post) => (
-                    <div className="my-[24px]">
+                    <div className="my-[24px] hover:animate-bounce-light-smooth" key={post._id}>
                         <Link to={`/post/${post._id}`} key={post._id}>
                             <div className="h-[340px]">
                                 <img className="h-full rounded-t-[20px] w-full" src={post.cover} alt={post.title} />

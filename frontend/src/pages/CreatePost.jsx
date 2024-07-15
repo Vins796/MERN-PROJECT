@@ -1,23 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createPost } from "../services/api";
+import { createPost, getMe } from "../services/api.js";
 
 export default function CreatePost() {
 
-  const [coverFile, setCoverFile] = useState(null);
+  const navigate = useNavigate();
+
   const [post, setPost] = useState({
-      title: '',
-      category: '',
-      content: '',
-      cover: '',
-      readTime: {
-          value: 0,
-          unit: 'minutes'
-      },
-      author: ''
+    title: '',
+    category: '',
+    content: '',
+    cover: '',
+    readTime: {
+        value: 0,
+        unit: 'minutes'
+    },
+    author: ''
   });
 
-  const navigate = useNavigate();
+  const [coverFile, setCoverFile] = useState(null);
+
+  // Recupero l'email dell'utente loggato
+  useEffect(() => {
+    const fetchUserEmail = async () => {
+      try {
+        const userData = await getMe();
+        setPost((prevPost) => ({ ...prevPost, author: userData.email }));
+      } catch (error) {
+        console.error("Errore nel recupero dei dati utente:", error);
+        navigate("/login");
+      }
+    };
+    fetchUserEmail();
+  }, [navigate]);
+
 
   const handleChange = (e) => {
       const {name, value} = e.target;
@@ -122,8 +138,7 @@ export default function CreatePost() {
               type="email"
               name="author"
               value={post.author}
-              onChange={handleChange}
-              required
+              readOnly
             />
           </div>
       

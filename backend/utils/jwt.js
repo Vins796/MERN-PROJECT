@@ -21,8 +21,13 @@ export const verifyJWT = (token) => {
         // Utilizzo il metodo verify per verificare il token
         jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
             // Callback che gestisce l'errore e il decoded
-            if(err) reject(err); // se c'è un errore, reject
-            resolve(decoded); // se il token è valido, resolve
+            if(err) {
+                console.error("Errore nella verifica del token:", err);
+                reject(err); // se c'è un errore, reject
+            } else {
+                resolve(decoded); // se il token è valido, resolve
+            }
+                
         });
     });
 };

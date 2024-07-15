@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { createComment, getComments, getPost } from "../services/api";
+import { useNavigate, useParams } from "react-router-dom";
+import { createComment, getAuthorByEmail, getComments, getPost } from "../services/api";
 
 import { HandThumbUpIcon } from '@heroicons/react/24/outline';
 import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
 
 export default function SinglePost() {
+
+  const navigate = useNavigate();
 
   // Imposto un counter a 0 per i like
   const [counter, setCounter] = useState(0);
@@ -76,13 +78,37 @@ export default function SinglePost() {
     setNewComment((prev) => ({ ...prev, [name]: value }));
   };
 
+  const navigateToProfile = async (email) => {
+    try {
+      // console.log("Navigating to profile for email:", email);
+      const response = await getAuthorByEmail(email);
+      // console.log("Author response:", response);
+      if (response && response.data && response.data._id) {
+        const authorId = response.data._id;
+        // console.log("Navigating to:", `/profile/${authorId}`);
+        navigate(`/profile/${authorId}`);
+      } else {
+        console.error("Invalid response structure:", response);
+        alert("Impossibile trovare il profilo dell'autore.");
+      }
+    } catch (error) {
+      console.error("Errore nel recupero dell'ID dell'autore:", error);
+      if (error.response) {
+        console.error("Status:", error.response.status);
+        console.error("Data:", error.response.data);
+      }
+      alert(`Si è verificato un errore nel recupero del profilo dell'autore: ${error.message}`);
+    }
+  };
+
   return (
     <div className="flex justify-center py-[60px] min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:bg-white dark:from-white dark:via-gray-100 dark:to-gray-200">
       <div>
         <img className="rounded-[20px] h-[500px] mx-auto w-[1000px]" src={singlePost.cover} alt={singlePost.title} />
         <div>
           <h1 className="text-3xl mt-5 mb-2 font-mono text-white dark:text-black">{singlePost.title}</h1>
-          <p className="font-mono mb-2 text-white dark:text-black">Autore: <span className="text-[#01FF84] dark:text-black">{singlePost.author}</span></p>
+          <p className="font-mono mb-2 text-white dark:text-black">Autore: <span onClick={() => navigateToProfile(singlePost.author)} className="text-[#01FF84] dark:text-black cursor-pointer">{singlePost.author}</span></p>
+          {/* {console.log("Author email", singlePost.author)} */}
           <p className="font-mono text-white dark:text-black">{singlePost.content}</p>
           <div className="flex items-center gap-[14px] mt-[14px]">
             <HandThumbUpIcon className="h-[30px] cursor-pointer text-white dark:text-black" onClick={handleClick}/> <span className="text-white dark:text-black">{counter}</span>
@@ -94,7 +120,7 @@ export default function SinglePost() {
               {/* // TODO : qua dovrò stampare i commenti  */}
               {comments.map((comment, index) => (
                 <div key={index} className="p-4 border border-black">
-                  <h3 className="font-semibold font-mono text-[#01FF84] dark:text-black">{comment.name} <span className="font-normal text-white dark:text-black">/ {comment.email}</span></h3>
+                  <h3 className="font-semibold font-mono text-[#01FF84] dark:text-black">{comment.name} <span onClick={() =>navigateToProfile(comment.email)} className="font-normal text-white dark:text-black cursor-pointer">/ {comment.email}</span></h3>
                   <span className="text-white dark:text-black">{comment.content}</span>
                 </div>
               ))}
@@ -103,9 +129,9 @@ export default function SinglePost() {
             {isVisible && (
               <form className="mt-[50px]" onSubmit={handleCommentSubmit}>
                 <h3 className="text-2xl font-mono text-center mb-3 text-white">Lascia un commento</h3>
-                <input onChange={handleCommentChange} type="text" name="name" value={newComment.name} placeholder="Nome..." className="p-[20px] w-full mb-4 text-white"/>
-                <input onChange={handleCommentChange} type="email" name="email" value={newComment.email} placeholder="Email..." className="p-[20px] w-full mb-4 text-white"/>
-                <input onChange={handleCommentChange} type="text-area" name="content" value={newComment.content} placeholder="     Lascia un commento..." className="py-5 w-full mb-3 text-white"/>
+                <input onChange={handleCommentChange} type="text" name="name" value={newComment.name} placeholder="Nome..." className="p-[20px] w-full mb-4 text-black"/>
+                <input onChange={handleCommentChange} type="email" name="email" value={newComment.email} placeholder="Email..." className="p-[20px] w-full mb-4 text-black"/>
+                <input onChange={handleCommentChange} type="text-area" name="content" value={newComment.content} placeholder="     Lascia un commento..." className="py-5 w-full mb-3 text-black"/>
                 <button className="w-full text-black bg-[#01FF84] border border-[#000] text-[20px] font-semibold font-mono hover:text-white hover:bg-stone-950 p-3 transition duration-300 ease-in-out" type="submit">Invia</button>
               </form>
             )}  

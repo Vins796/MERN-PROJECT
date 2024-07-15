@@ -1,8 +1,8 @@
-import express from 'express';
-import Authors from '../models/Authors.js';
-import BlogPosts from '../models/BlogPosts.js';
-
+import express from 'express'; // Importo express
+import Authors from '../models/Authors.js'; // Importo il modello Authors
+import BlogPosts from '../models/BlogPosts.js'; // Importo il modello BlogPosts
 import cloudinaryUploader from "../config/cloudinaryConfig.js";
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -49,15 +49,70 @@ router.get('/:id', async (req,res) => {
         }
     } catch(err){
         res.status(500).json({message: err.message});
-    }})
+}});
+
+// router.get('/mail/:email', async (req, res) => {
+//     try {
+//         const { email } = req.params;
+
+//         if (!email) {
+//             return res.status(400).json({ message: "L'email è richiesta per la ricerca" });
+//         }
+
+//         const author = await Authors.findOne({ email: email });
+
+//         if (!author) {
+//             return res.status(404).json({ message: "Autore non trovato con questa email" });
+//         }
+
+//         res.json(author);
+//     } catch (error) {
+//         console.error("Errore durante la ricerca dell'autore:", error);
+//         res.status(500).json({ message: "Errore interno del server" });
+//     }
+// });
+router.get('/mail/:email', async (req, res) => {
+    try {
+      const author = await Authors.findOne({ email: req.params.email });
+      if (!author) {
+        return res.status(404).json({ message: "Autore non trovato" });
+      }
+      const authorData = author.toObject();
+      authorData.avatar = author.avatar ? `${process.env.BASE_URL}/${author.avatar}` : null;
+      res.json(authorData);
+    } catch (error) {
+      res.status(500).json({ message: "Errore interno del server" });
+    }
+});
+
+router.get('/author/:author', async (req, res) => {
+    try {
+        const { author } = req.params;
+
+        if (!author) {
+            return res.status(400).json({ message: "L'email dell'autore è richiesta per la ricerca" });
+        }
+
+        const posts = await BlogPosts.find({ author: author });
+
+        if (posts.length === 0) {
+            return res.status(404).json({ message: "Nessun post trovato per questo autore" });
+        }
+
+        res.json(posts);
+    } catch (error) {
+        console.error("Errore durante la ricerca dei post dell'autore:", error);
+        res.status(500).json({ message: "Errore interno del server" });
+    }
+});
+
 
 // POST /authors - Crea un nuovo autore
 router.post('/', async (req,res) => {
     // Creo una nuova istanza del modello Authors utilizzando i dati forniti nel corpo della richiesta
-    const author = new Authors(req.body);
     try {
-        // Salvo i dati nel db
-        const newAuthor = await author.save();
+        const author = new Authors(req.body); // Creo una nuova istanza del modello Authors utilizzando i dati forniti nel corpo della richiesta
+        const newAuthor = await author.save(); // Salvo i dati nel db
 
         // Rimuovi la password dalla risposta per sicurezza
         const authorResponse = newAuthor.toObject();

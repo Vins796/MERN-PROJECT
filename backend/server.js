@@ -1,24 +1,17 @@
 // Importa il framework Express per creare l'applicazione web
 import express from 'express';
-
 // Importa Mongoose per la connessione e l'interazione con MongoDB
 import mongoose from 'mongoose';
-
 // Importa dotenv per caricare le variabili d'ambiente dal file .env
 import dotenv from 'dotenv';
-
 // Importa una utility per elencare tutti gli endpoint dell'applicazione
 import endpoints from 'express-list-endpoints';
-
 // Importa il middleware CORS per gestire le richieste cross-origin
 import cors from 'cors';
-
 // Importa le route per i post del blog
 import blogPostRoutes from './routes/BlogPostsRoutes.js';
-
 // Importa le route per gli autori
 import authorRoutes from './routes/AuthorsRoutes.js';
-
 // Importo le rotte per l'autenticazione
 import authRoutes from './routes/AuthRoutes.js';
 
@@ -46,7 +39,10 @@ dotenv.config();
 const app = express();
 
 // Abilita CORS per tutte le richieste
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // o l'URL del tuo frontend
+    credentials: true
+  }));
 
 app.use(express.json());
 
@@ -55,14 +51,14 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connesso'))
     .catch((err) => console.error('Errore di connessione', err));
 
+// Imposta le route per l'autenticazione
+app.use('/api/auth', authRoutes);
+
 // Imposta le route per gli autori
 app.use('/api/authors', authorRoutes);
 
 // Imposta le route per i post del blog
 app.use('/api/blogPosts', blogPostRoutes);
-
-// Imposta le route per l'autenticazione
-app.use('/api/auth', authRoutes);
 
 // Imposta la porta del server specifica o 5000
 const PORT = process.env.PORT || 5000;

@@ -10,40 +10,38 @@ import { authMiddleware } from "../midllewares/authMiddleware.js";
 
 const router = express.Router();
 
-// GET /blogPosts - Recupera tutti i post del blog
-router.get('/', async (req,res) => {
-    try {
-        // Inizializza l'oggetto query per il filtraggio
-        let query = {};
-        // Se c'è un parametro 'title' nella query, aggiungi un filtro case-insensitive
-        if(req.query.title) {
-            // query.title = req.query.title;
-            query.title = {$regex: req.query.title, $options: 'i'} // i = insensitive
-        }
-        // Imposta i parametri di paginazione e ordinamento
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const sort = req.query.sort || 'name';
-        const sortDirection = req.query.sortDirection === 'desc' ? -1 : 1;
-        const skip = (page -1) * limit;
-        const blogPost = await BlogPosts.find(query)
-         .sort({[sort]: sortDirection})
-         .skip(skip)
-         .limit(limit)
+// Proteggi le altre rotte con il middleware di autenticazione
+router.use(authMiddleware);
 
-        // Conta il numero totale di documenti
-        const total = await BlogPosts.countDocuments();
-        const posts = await BlogPosts.find(query);
-        // Invia la risposta con i dati e le informazioni sulla paginazione
+// GET /blogPosts - Recupera tutti i post del blog
+// 
+router.get('/', async (req, res) => {
+    try {
+        const { page = 1, limit = 10, search = '' } = req.query;
+        const query = search
+            ? {
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { author: { $regex: search, $options: 'i' } }
+                ]
+              }
+            : {};
+
+        const blogPost = await BlogPosts.find(query)
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit));
+
+        const total = await BlogPosts.countDocuments(query);
+
         res.json({
-            posts,
             blogPost,
-            currentPage: page,
+            currentPage: parseInt(page),
             totalPages: Math.ceil(total / limit),
             totalPosts: total
-        })        
-    } catch(err){
-        res.status(500).json({message: err.message});
+        });
+    } catch(err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
@@ -62,9 +60,6 @@ router.get('/:id', async (req,res) => {
     } catch(err){
         res.status(500).json({message: err.message});
 }});
-
-// Proteggi le altre rotte con il middleware di autenticazione
-router.use(authMiddleware);
 
 // POST /blogPosts - Crea un nuovo post del blog
 router.post('/', cloudinaryUploader.single('cover'), async (req,res) => {
@@ -269,6 +264,22 @@ router.delete('/:id/comments/:commentId', async (req,res) => {
         res.status(400).json({ message: err.message });
     }
 });
+
+// GET /blogPosts/author/:email - Recupera tutti i post di un autore specifico
+router.get('/author/:email', async (req, res) => {
+    try {
+      console.log("Email ricevuta:", req.params.email);
+      const posts = await BlogPosts.find({ author: req.params.email });
+      console.log("Post trovati:", posts.length);
+      if (posts.length === 0) {
+        return res.status(404).json({ message: "Nessun post trovato per questo autore" });
+      }
+      res.json(posts);
+    } catch (err) {
+      console.error("Errore server:", err);
+      res.status(500).json({ message: err.message });
+    }
+  });
 
 
 

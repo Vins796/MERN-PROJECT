@@ -1,0 +1,93 @@
+import { Link, useNavigate } from "react-router-dom" // Importo il Link per il routing
+import image from '../assets/logo.png' // Importo l'immagine del logo
+import { registerUser } from '../services/api.js'; // Importo la funzione per la registrazione dell'utente
+import { useState } from "react";
+
+export default function Register() {
+
+  // Dichiaro lo stato del form con i campi vuoti
+  const [form, setForm] = useState({
+    nome: "",
+    cognome: '',
+    dataDiNascita: "",
+    avatar: "",
+    email: "",
+    password: "",
+  });
+
+  const navigate = useNavigate(); // Importo useNavigate per il routing
+
+  // Funzione per gestire il cambio dei valori del form
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+  // Funzione per gestire il cambio dell'avatar
+  const handleFileChange = (e) => {
+    setForm({ ...form, avatar: e.target.files[0] });
+  };
+
+  // Funzione per gestire il submit del form
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevenzione dell'evento di default
+    try {
+      // Chiamo la funzione per la registrazione dell'utente
+      await registerUser(form);
+      alert("Registrazione avvenuta con successo!");
+      console.log("Utente registrato con successo");
+      navigate('/login'); // Rimando l'utente alla pagina di login
+    } catch(err) {
+      console.log("Errore nella registrazione", err.response?.data || err.message);
+    }
+  }
+
+  return (
+    <div className="flex w-full min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div className="flex items-center justify-center bg-black rounded-lg w-[600px]">
+        <div className="mx-auto w-full h-full space-y-6 p-12">
+          <div className="text-center space-y-2">
+            <Link to="/" className="inline-flex items-center gap-2">
+              <img src={image} alt="logo" className="h-[50px] w-[100px] bg-white p-3 rounded" />
+            </Link>
+            <h1 className="text-3xl font-bold text-white">Sign up</h1>
+            <p className="text-muted-foreground text-white font-mono">
+              Already have an account?{" "}
+              <Link to="/login" className="underline text-[#01FF84]">
+                Sign in
+              </Link>
+            </p>
+          </div>
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            <div className="space-y-2 flex flex-col">
+              <label className="text-white font-mono" htmlFor="nome">Name</label>
+              <input name="nome" type="text" id="nome" placeholder="Name" required onChange={handleChange}/>
+            </div>
+            <div className="space-y-2 flex flex-col">
+              <label className="text-white font-mono" htmlFor="cognome">Surname</label>
+              <input name="cognome" type="text" id="cognome" placeholder="Cognome" required onChange={handleChange}/>
+            </div>
+            <div className="space-y-2 flex flex-col">
+              <label className="text-white font-mono" htmlFor="dataDiNascita">Date of Birth</label>
+              <input name="dataDiNascita" type="date" id="dataDiNascita" placeholder="Age" required onChange={handleChange}/>
+            </div>
+            <div className="space-y-2 flex flex-col">
+              <label className="text-white font-mono" htmlFor="avatar">Avatar</label>
+              <input name="avatar" type="file" id="avatar" required onChange={handleFileChange}/>
+            </div>
+            <div className="space-y-2 flex flex-col">
+              <label className="text-white font-mono" htmlFor="email">Email</label>
+              <input name="email" type="email" id="email" placeholder="m@example.com" required onChange={handleChange}/>
+            </div>
+            <div className="space-y-2 flex flex-col">
+              <label className="text-white font-mono" htmlFor="password">Password</label>
+              <input name="password" type="password" id="password" placeholder="Password" required onChange={handleChange}/>
+            </div>
+            <button type="submit" className="w-full bg-[#01FF84] p-2 rounded-lg font-mono">
+              Sign up
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+

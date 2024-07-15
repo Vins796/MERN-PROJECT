@@ -27,7 +27,7 @@ router.post("/login", async (req, res) => {
     
         // Se le credenziali sono corrette, genera un token JWT
         const token = await generateJWT({ id: author._id });
-    
+        console.log("Token generato:", token);    
         // Restituisce il token e un messaggio di successo
         res.json({ token, message: "Login effettuato con successo" });
     } catch (error) {
