@@ -100,15 +100,30 @@ export const loginUser = async (credentials) => {
 };
 
 // Funzione per ottenere l'autore con l'email specificata
+// export const getAuthorEmail = async (email) => {
+//   try {
+//     return api.get(`/authors/mail/${email}`).then(response => {
+//       console.log("Risposta completa da getAuthorEmail:", response.data);
+//       return response;
+//     });
+//   } catch(error) {
+//     console.error("Errore nella chiamata API di login:", error); // Log dell'errore per debugging
+//     throw error; // Lancia l'errore per essere gestito dal chiamante
+//   }
+// };
 export const getAuthorEmail = async (email) => {
+  console.log("getAuthorEmail called with email:", email);
   try {
-    return api.get(`/authors/mail/${email}`).then(response => {
-      console.log("Risposta completa da getAuthorEmail:", response.data);
-      return response;
+    const token = localStorage.getItem('token');
+    console.log("Token used for request:", token);
+    const response = await api.get(`/authors/mail/${email}`, {
+      headers: { Authorization: `Bearer ${token}` }
     });
-  } catch(error) {
-    console.error("Errore nella chiamata API di login:", error); // Log dell'errore per debugging
-    throw error; // Lancia l'errore per essere gestito dal chiamante
+    console.log("getAuthorEmail response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Errore in getAuthorEmail:", error.response || error);
+    throw error;
   }
 };
 

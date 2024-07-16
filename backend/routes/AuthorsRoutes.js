@@ -2,7 +2,8 @@ import express from 'express'; // Importo express
 import Authors from '../models/Authors.js'; // Importo il modello Authors
 import BlogPosts from '../models/BlogPosts.js'; // Importo il modello BlogPosts
 import cloudinaryUploader from "../config/cloudinaryConfig.js";
-import jwt from 'jsonwebtoken';
+import { authMiddleware } from "../midllewares/authMiddleware.js";
+
 
 const router = express.Router();
 
@@ -71,18 +72,40 @@ router.get('/:id', async (req,res) => {
 //         res.status(500).json({ message: "Errore interno del server" });
 //     }
 // });
-router.get('/mail/:email', async (req, res) => {
-    try {
-      const author = await Authors.findOne({ email: req.params.email });
-      if (!author) {
-        return res.status(404).json({ message: "Autore non trovato" });
-      }
-      const authorData = author.toObject();
-      authorData.avatar = author.avatar ? `${process.env.BASE_URL}/${author.avatar}` : null;
-      res.json(authorData);
-    } catch (error) {
-      res.status(500).json({ message: "Errore interno del server" });
+// router.get('/mail/:email', async (req, res) => {
+//     console.log("GET /mail/:email route called");
+//     try {
+//       console.log("Richiesta ricevuta per email:", req.params.email);
+//       const author = await Authors.findOne({ email: req.params.email });
+//       console.log("Risultato della ricerca:", author);
+//       if (!author) {
+//         console.log("Autore non trovato");
+//         return res.status(404).json({ message: "Autore non trovato" });
+//       }
+//       console.log("Autore trovato:", author);
+//       res.json(author);
+//     } catch (error) {
+//       console.error("Errore durante la ricerca dell'autore:", error);
+//       res.status(500).json({ message: "Errore interno del server" });
+//     }
+//   });
+
+router.get('/mail/:email', authMiddleware, async (req, res) => {
+  console.log("GET /mail/:email route called");
+  try {
+    console.log("Richiesta ricevuta per email:", req.params.email);
+    const author = await Authors.findOne({ email: req.params.email });
+    console.log("Risultato della ricerca:", author);
+    if (!author) {
+      console.log("Autore non trovato");
+      return res.status(404).json({ message: "Autore non trovato" });
     }
+    console.log("Autore trovato:", author);
+    res.json(author);
+  } catch (error) {
+    console.error("Errore durante la ricerca dell'autore:", error);
+    res.status(500).json({ message: "Errore interno del server" });
+  }
 });
 
 router.get('/author/:author', async (req, res) => {

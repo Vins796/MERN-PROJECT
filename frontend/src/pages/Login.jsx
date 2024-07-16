@@ -1,14 +1,61 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import image from '../assets/logo.png'
 import { loginUser } from "../services/api";
+import { useEffect } from "react";
 
 export default function Login({ form, setForm }) {
 
   const navigate = useNavigate(); // Permette di navigare tra le pagine
+  const location = useLocation(); // Per accedere ai parametri dell'URL corrente
+
+  
+  // useEffect(() => {
+  //   // Questo effect viene eseguito dopo il rendering del componente
+  //   // e ogni volta che location o navigate cambiano  
+  //   // Estraiamo i parametri dall'URL
+  //   const params = new URLSearchParams(location.search);
+  //   // Cerchiamo un parametro 'token' nell'URL
+  //   const token = params.get("token");
+  
+  //   if (token) {
+  //     console.log("Token ricevuto:", token);
+  //     // Se troviamo un token, lo salviamo nel localStorage
+  //     localStorage.setItem("token", token);
+  //     // Dispatchamo un evento 'storage' per aggiornare altri componenti che potrebbero dipendere dal token
+  //     window.dispatchEvent(new Event("storage"));
+  //     // Navighiamo alla home page
+  //     navigate("/");
+  //   }
+  // }, [location, navigate]); // Questo effect dipende da location e navigate
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+  
+    if (token) {
+      console.log("Token ricevuto:", token);
+      localStorage.setItem("token", token);
+      
+      // Decodifica il token per ottenere i dati dell'utente
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+      console.log("Dati utente decodificati:", decodedToken);
+      
+      // Salva i dati dell'utente nel localStorage
+      localStorage.setItem("userData", JSON.stringify({email: decodedToken.email}));
+      
+      window.dispatchEvent(new Event("storage"));
+      navigate("/");
+    }
+  }, [location, navigate]);
 
   // Funzione che aggiorna lo stato del form
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
+  };
+
+  // Funzione per gestire il login con Google
+  const handleGoogleLogin = () => {
+    // Reindirizziamo l'utente all'endpoint del backend che inizia il processo di autenticazione Google
+    window.location.href = "http://localhost:5001/api/auth/google";
   };
   
 
@@ -58,6 +105,7 @@ export default function Login({ form, setForm }) {
               Sign in
             </button>
           </form>
+            <button className="w-full bg-[#01FF84] p-2 rounded-lg font-mono" onClick={handleGoogleLogin}>Accedi con Google</button>
         </div>
       </div>
     </div>

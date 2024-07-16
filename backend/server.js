@@ -15,6 +15,9 @@ import authorRoutes from './routes/AuthorsRoutes.js';
 // Importo le rotte per l'autenticazione
 import authRoutes from './routes/AuthRoutes.js';
 
+import session from "express-session";
+import passport from "./config/passportConfig.js";
+
 // Importa moduli per gestire i percorsi dei file
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -45,6 +48,28 @@ app.use(cors({
   }));
 
 app.use(express.json());
+
+// Inizializzazione di Express Session
+app.use(
+    session({
+      // Il 'secret' è usato per firmare il cookie di sessione
+      // È importante che sia una stringa lunga, unica e segreta
+      secret: process.env.SESSION_SECRET,
+  
+      // 'resave: false' dice al gestore delle sessioni di non
+      // salvare la sessione se non è stata modificata
+      resave: false,
+  
+      // 'saveUninitialized: false' dice al gestore delle sessioni di non
+      // creare una sessione finché non memorizziamo qualcosa
+      // Aiuta a implementare le "login sessions" e riduce l'uso del server di memorizzazione
+      saveUninitialized: false,
+    })
+);
+
+// Inizializzazione di Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Connette al database MongoDB usando l'URI
 mongoose.connect(process.env.MONGO_URI)

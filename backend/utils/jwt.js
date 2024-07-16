@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 export const generateJWT = (payload) => {
     // Restituisce una promise
     return new Promise((resolve, reject) => 
-    jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '1 day'}, (err, token) => {
+    jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '1 minute'}, (err, token) => {
         if(err) reject(err);
         resolve(token);
     })

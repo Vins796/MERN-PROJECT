@@ -16,46 +16,87 @@ export default function Navbar({search, handleChange}) {
     const navigate = useNavigate();
 
     // FUNZIONE PER CONTROLLARE LOGIN
+    // useEffect(() => {
+    //   const checkLoginStatus = () => {
+    //     const token = localStorage.getItem("token");
+    //     const storedUserData = JSON.parse(localStorage.getItem("userData"));
+    //     setIsLoggedIn(!!token);
+    //     setUserData(storedUserData);
+    //   };
+  
+    //   checkLoginStatus();
+    //   window.addEventListener("storage", checkLoginStatus);
+  
+    //   return () => {
+    //     window.removeEventListener("storage", checkLoginStatus);
+    //   };
+    // }, []);
     useEffect(() => {
       const checkLoginStatus = () => {
         const token = localStorage.getItem("token");
         const storedUserData = JSON.parse(localStorage.getItem("userData"));
         setIsLoggedIn(!!token);
         setUserData(storedUserData);
+        console.log("Stored user data:", storedUserData);
       };
-  
+    
       checkLoginStatus();
       window.addEventListener("storage", checkLoginStatus);
-  
+    
       return () => {
         window.removeEventListener("storage", checkLoginStatus);
       };
     }, []);
 
     // FUNZIONE PER OTTENERE DATI AUTORI
+    // useEffect(() => {
+    //   const fetchAuthor = async () => {
+    //     if (userData && userData.email) {
+    //       try {
+    //         const response = await getAuthorEmail(userData.email);
+    //         if (response && response.data) {
+    //           setAuthor(response.data);
+    //         } else {
+    //           console.error("Dati dell'autore non validi");
+    //         }
+    //       } catch (error) {
+    //         console.error("Errore nella richiesta dell'autore", error);
+    //       }
+    //     }
+    //   };
+  
+    //   fetchAuthor();
+    // }, [userData]); // EFFETTO CHE OTTENE DATI AUTORI
+
     useEffect(() => {
       const fetchAuthor = async () => {
+        console.log("fetchAuthor called, userData:", userData);
         if (userData && userData.email) {
           try {
-            const response = await getAuthorEmail(userData.email);
-            if (response && response.data) {
-              setAuthor(response.data);
+            console.log("Fetching author data for email:", userData.email);
+            const authorData = await getAuthorEmail(userData.email);
+            console.log("Author data received:", authorData);
+            if (authorData) {
+              setAuthor(authorData);
             } else {
               console.error("Dati dell'autore non validi");
             }
           } catch (error) {
             console.error("Errore nella richiesta dell'autore", error);
           }
+        } else {
+          console.log("userData o email mancante");
         }
       };
-  
+    
       fetchAuthor();
-    }, [userData]); // EFFETTO CHE OTTENE DATI AUTORI
+    }, [userData]);
 
     useEffect(() => {
       console.log("Author state:", author);
     }, [author]);
 
+    console.log("Author state:", userData);
     // FUNZIONE PER LOGOUT
     const handleLogout = () => {
       localStorage.removeItem("token");
