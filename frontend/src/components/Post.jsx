@@ -18,7 +18,7 @@ export default function Post({posts}) {
                             </div>
                             <div className="bg-black w-full rounded-b-[20px] p-4">
                                 <h2 className="font-mono text-white text-[24px]">{post.title}</h2>
-                                <p className="font-mono text-gray-400">Autore: {post.author}</p>
+                                <p className="font-mono text-gray-400">Autore: <span className="text-[#01FF84]">{post.author}</span></p>
                             </div>
                         </Link>  
                     </div>

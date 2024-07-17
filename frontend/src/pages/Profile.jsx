@@ -65,7 +65,7 @@ export default function Profile({search}) {
                     <img src={avatarLogo} alt="imageLogo" className="w-40 h-40 rounded-full mb-[20px] mx-auto"/>
                 </div>
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold font-mono text-white">{author.nome} {author.cognome}</h1>
+                    <h1 className="text-2xl font-bold font-mono text-white dark:text-black">{author.nome} {author.cognome}</h1>
                     <p className="text-gray-500 font-mono">{author.email}</p>
                     <p className="text-gray-500 font-mono">{author.dataDiNascita}</p>
                 </div>

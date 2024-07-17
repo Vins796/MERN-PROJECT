@@ -208,8 +208,11 @@ router.post('/:id/comments', async (req,res) => {
         post.comments.push(newComment);
         // Salvo le modifiche nel db
         await post.save();
+        const createdComment = post.comments[post.comments.length - 1];
+        console.log("Commento creato:", createdComment);
+        console.log("Commento salvato:", post.comments[post.comments.length - 1]);
         // Invio la risposta di avvenuta creazione del post
-        res.status(201).json(newComment);
+        res.status(201).json(createdComment);
     } catch(err) {
         res.status(400).json({ message: err.message });
     }
@@ -248,22 +251,40 @@ router.delete('/:id/comments/:commentId', async (req,res) => {
         if(!post) {
             return res.status(404).json({message: 'Post non presente'})
         };
-        // Cerco il commento specifico all'interno del post
-        const comment = post.comments.id(req.params.commentId);
-        // Verifico se il commento è presente
-        if(!comment) {
+        // Trova l'indice del commento da rimuovere
+        const commentIndex = post.comments.findIndex(comment => comment._id.toString() === req.params.commentId);
+        // Verifica se il commento è presente
+        if(commentIndex === -1) {
             return res.status(404).json({ message: "Commento non trovato" });
         };
-        // Rimuovo il commento dal db
-        comment.remove();
+        // Rimuovo il commento dall'array
+        post.comments.splice(commentIndex, 1);
         // Salvo il post nel db
         await post.save();
-        // Invio un messaggio di confermo per capire che è andato tutto a buon fine
+        // Invio un messaggio di conferma
         res.json({ message: "Commento eliminato con successo!" });
     } catch(err) {
+        console.error("Errore nella cancellazione del commento:", err);
         res.status(400).json({ message: err.message });
     }
 });
+// router.delete('/:id/comments/:commentId', async (req, res) => {
+//     try {
+//       const post = await BlogPosts.findById(req.params.id);
+//       if (!post) {
+//         return res.status(404).json({ message: 'Post non trovato' });
+//       }
+//       const commentIndex = post.comments.findIndex(comment => comment._id.toString() === req.params.commentId);
+//       if (commentIndex === -1) {
+//         return res.status(404).json({ message: 'Commento non trovato' });
+//       }
+//       post.comments.splice(commentIndex, 1);
+//       await post.save();
+//       res.json({ message: 'Commento eliminato con successo' });
+//     } catch (err) {
+//       res.status(400).json({ message: err.message });
+//     }
+//   });
 
 // GET /blogPosts/author/:email - Recupera tutti i post di un autore specifico
 router.get('/author/:email', async (req, res) => {

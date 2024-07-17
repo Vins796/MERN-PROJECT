@@ -78,9 +78,13 @@ export const getComments = (id) => {
     return api.get(`/blogPosts/${id}/comments`);
 };
 
-export const createComment = (id, commentData) => api.post(`/blogPosts/${id}/comments`, commentData);
+export const createComment = (id, commentData) => 
+  api.post(`/blogPosts/${id}/comments`, commentData)
+    .then(response => response.data);
 
-
+    export const deleteComment = (postId, commentId) => 
+      api.delete(`/blogPosts/${postId}/comments/${commentId}`)
+        .then(response => response.data);
 // --------------------------------------------------------------------------------------------------------- //
 
 

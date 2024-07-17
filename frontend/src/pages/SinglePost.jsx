@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createComment, getAuthorByEmail, getComments, getPost } from "../services/api";
+import { createComment, getAuthorByEmail, getComments, getPost, getMe, deleteComment } from "../services/api";
 
 import { HandThumbUpIcon } from '@heroicons/react/24/outline';
 import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
@@ -8,6 +8,7 @@ import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
 export default function SinglePost() {
 
   const navigate = useNavigate();
+  const [currentUserEmail, setCurrentUserEmail] = useState('');
 
   // Imposto un counter a 0 per i like
   const [counter, setCounter] = useState(0);
@@ -25,6 +26,7 @@ export default function SinglePost() {
 
   // Ottengo l'id del post
   const { id } = useParams();
+  const [userData, setUserData] = useState(null); // Imposto lo stato di userData a null
 
   // Definisco lo stato del post come array vuoto per iniettarci la response all'interno
   const [singlePost, setSinglePost] = useState([]);
@@ -36,6 +38,24 @@ export default function SinglePost() {
     email: '',
     content: ''
   });
+
+  // Funzione per ottenere i dati dell'utente
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = await getMe();
+        setCurrentUserEmail(user.email);
+        setNewComment(prevComment => ({
+          ...prevComment,
+          name: `${user.nome} ${user.cognome}`.trim(),
+          email: user.email || ''
+        }));
+      } catch (error) {
+        console.error("Errore nel recupero dei dati utente:", error);
+      }
+    };
+    fetchUserData();
+  }, []);
   
   // Funzione per ottenere sia il post che i commenti
   useEffect(() => {
@@ -56,26 +76,47 @@ export default function SinglePost() {
 
   // Funzione asincrona che gestisce l'invio del form dei commenti
   const handleCommentSubmit = async (e) => {
-    // Previene il comportamento predefinito del form (refresh della pagina)
     e.preventDefault();    
     try {
-        // Invia la richiesta al server per creare un nuovo commento
-        // 'id' è l'ID del post, 'newComment' contiene i dati del commento
-        const createdComment = await createComment(id, newComment);        
-        // Aggiorna lo stato dei commenti aggiungendo il nuovo commento
-        // Usa una funzione di callback per assicurarsi di avere lo stato più recente
-        setComments(prevComments => [...prevComments, createdComment.data]);        
-        // Resetta il form del commento svuotando tutti i campi
+      const createdComment = await createComment(id, newComment); 
+      console.log("Risposta del server per il nuovo commento:", createdComment);
+      
+      if (createdComment && createdComment._id) {
+        setComments(prevComments => [...prevComments, createdComment]);        
         setNewComment({name: "", email: "", content: ""});
+        console.log("Commento aggiunto con successo:", createdComment);
+      } else {
+        console.error("Risposta del server non valida:", createdComment);
+      }
     } catch(err) {
-        // In caso di errore durante l'aggiunta del commento, logga l'errore nella console
-        console.error("Errore nell'aggiunta del commento:", err);
+      console.error("Errore nell'aggiunta del commento:", err);
     }
   };
 
+  // Funzione per gestire il cambio dei dati del commento
   const handleCommentChange = (e) => {
     const { name, value } = e.target;
     setNewComment((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Funzione per cancellare un commento
+  const handleDeleteComment = async (commentId) => {
+    if (!commentId) {
+      console.error("ID del commento non valido");
+      return;
+    }
+    console.log("Deleting comment with ID:", commentId);
+    try {
+      const response = await deleteComment(id, commentId);
+      console.log("Risposta del server:", response);
+      if (response.message === "Commento eliminato con successo!") {
+        setComments(prevComments => prevComments.filter(comment => comment._id !== commentId));
+      } else {
+        console.error("Errore imprevisto nella cancellazione del commento");
+      }
+    } catch (error) {
+      console.error("Errore nella cancellazione del commento:", error.response?.data || error.message);
+    }
   };
 
   const navigateToProfile = async (email) => {
@@ -106,10 +147,55 @@ export default function SinglePost() {
       <div>
         <img className="rounded-[20px] h-[500px] mx-auto w-[1000px]" src={singlePost.cover} alt={singlePost.title} />
         <div>
-          <h1 className="text-3xl mt-5 mb-2 font-mono text-white dark:text-black">{singlePost.title}</h1>
-          <p className="font-mono mb-2 text-white dark:text-black">Autore: <span onClick={() => navigateToProfile(singlePost.author)} className="text-[#01FF84] dark:text-black cursor-pointer">{singlePost.author}</span></p>
-          {/* {console.log("Author email", singlePost.author)} */}
-          <p className="font-mono text-white dark:text-black">{singlePost.content}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col">
+              <h1 className="text-3xl mt-5 mb-2 font-mono text-white dark:text-black">{singlePost.title}</h1>
+              <p className="font-mono mb-2 text-white dark:text-black">Autore: <span onClick={() => navigateToProfile(singlePost.author)} className="text-[#01FF84] dark:text-black cursor-pointer">{singlePost.author}</span></p>
+              <p className="font-mono text-white dark:text-black">{singlePost.content}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 hover:text-white hover:bg-orange-400 dark:border-black text-white dark:text-black">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="mr-2 h-4 w-4"
+                >
+                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                  <path d="m15 5 4 4"></path>
+                </svg>
+                Modify
+              </button>
+              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background h-10 px-4 py-2 text-red-500 hover:bg-red-500 hover:text-red-50 dark:border-black">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="mr-2 h-4 w-4"
+                >
+                  <path d="M3 6h18"></path>
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                  <line x1="10" x2="10" y1="11" y2="17"></line>
+                  <line x1="14" x2="14" y1="11" y2="17"></line>
+                </svg>
+                Delete
+              </button>
+            </div>
+          </div>
+          
           <div className="flex items-center gap-[14px] mt-[14px]">
             <HandThumbUpIcon className="h-[30px] cursor-pointer text-white dark:text-black" onClick={handleClick}/> <span className="text-white dark:text-black">{counter}</span>
             <ChatBubbleOvalLeftIcon onClick={toggleCommentForm} className="h-[30px] cursor-pointer text-white dark:text-black"/>
@@ -121,16 +207,40 @@ export default function SinglePost() {
               {comments.map((comment, index) => (
                 <div key={index} className="p-4 border border-black">
                   <h3 className="font-semibold font-mono text-[#01FF84] dark:text-black">{comment.name} <span onClick={() =>navigateToProfile(comment.email)} className="font-normal text-white dark:text-black cursor-pointer">/ {comment.email}</span></h3>
-                  <span className="text-white dark:text-black">{comment.content}</span>
+                  <p className="text-white dark:text-black">{comment.content}</p>
+                  {comment.email === currentUserEmail && (
+                    <button 
+                      onClick={() => handleDeleteComment(comment._id)}
+                      className="inline-flex items-center rounded-md bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 mt-3"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="mr-2 h-5 w-5"
+                      >
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                      </svg>
+                      Delete
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
 
             {isVisible && (
               <form className="mt-[50px]" onSubmit={handleCommentSubmit}>
-                <h3 className="text-2xl font-mono text-center mb-3 text-white">Lascia un commento</h3>
-                <input onChange={handleCommentChange} type="text" name="name" value={newComment.name} placeholder="Nome..." className="p-[20px] w-full mb-4 text-black"/>
-                <input onChange={handleCommentChange} type="email" name="email" value={newComment.email} placeholder="Email..." className="p-[20px] w-full mb-4 text-black"/>
+                <h3 className="text-2xl font-mono text-center mb-3 text-white dark:text-black">Lascia un commento</h3>
+                <input onChange={handleCommentChange} type="text" name="name" value={newComment.name} placeholder="Nome..." className="p-[20px] w-full mb-4 text-black hidden" readOnly/>
+                <input onChange={handleCommentChange} type="email" name="email" value={newComment.email} placeholder="Email..." className="p-[20px] w-full mb-4 text-black hidden" readOnly/>
                 <input onChange={handleCommentChange} type="text-area" name="content" value={newComment.content} placeholder="     Lascia un commento..." className="py-5 w-full mb-3 text-black"/>
                 <button className="w-full text-black bg-[#01FF84] border border-[#000] text-[20px] font-semibold font-mono hover:text-white hover:bg-stone-950 p-3 transition duration-300 ease-in-out" type="submit">Invia</button>
               </form>

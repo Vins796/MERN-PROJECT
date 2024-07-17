@@ -133,7 +133,7 @@ export default function Navbar({search, handleChange}) {
                         <DropdownHeader>
                           {author ? (
                               <>
-                                  <span className="block text-sm">{author.nome} {author.cognome}</span>
+                                  <span className="block text-sm text-[#01FF84]">{author.nome} {author.cognome}</span>
                                   <span className="block truncate text-sm font-medium">{author.email}</span>
                               </>
                         ) : (
