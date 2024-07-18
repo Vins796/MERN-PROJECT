@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
-import "../animation.css";
+import { Link } from "react-router-dom"; // Importo Link
+import "../animation.css"; // Importo l'animazione
 
 export default function Post({posts}) {
 
+    // Controllo se i post sono stati recuperati
+    // !Array.isArray(posts) controlla se posts è un array
     if (!Array.isArray(posts)) {
         return <div>Caricamento in corso...</div>;
     }

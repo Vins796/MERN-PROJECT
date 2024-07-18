@@ -1,18 +1,21 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import avatarLogo from '../assets/avatar.jpeg';
-import { getAuthor, getPostAuthor } from "../services/api";
+import { useEffect, useState } from "react"; // Importo lo stato
+import { Link, useParams } from "react-router-dom"; // Importo Link e useParams
+import avatarLogo from '../assets/avatar.jpeg'; // Importo l'immagine
+import { getAuthor, getPostAuthor } from "../services/api"; // Importo le funzioni
 
 export default function Profile({search}) {
 
-    const {id} = useParams();
-    const [author, setAuthor] = useState([]);
-    const [posts, setPosts] = useState([]);
+    const {id} = useParams(); // Recupero l'id dell'autore
+    const [author, setAuthor] = useState([]); // Imposto lo stato dell'autore
+    const [posts, setPosts] = useState([]); // Imposto lo stato dei post
+    const [filteredPosts, setFilteredPosts] = useState([]); // Imposto lo stato dei post filtrati
 
+    // Funzione per recuperare l'autore
     useEffect(() => {
         fetchAuthor();
     }, [id]);
 
+    // Funzione per recuperare i post dell'autore
     useEffect(() => {
         // console.log("Dati autore:", author);
         if (author && author.email) {
@@ -21,8 +24,8 @@ export default function Profile({search}) {
         }
     }, [author, author.email]);
 
-    const [filteredPosts, setFilteredPosts] = useState([]);
-
+    
+    // Funzione per filtrare i post
     useEffect(() => {
         if (posts.length > 0) {
             const filtered = posts.filter(post =>
@@ -42,6 +45,7 @@ export default function Profile({search}) {
             }
     }
 
+    // Funzione per recuperare i post dell'autore
     const fetchPosts = async () => {
         if (author && author.email) {
           try {
@@ -58,8 +62,8 @@ export default function Profile({search}) {
         }
     };
 
-  return (    
-        <main className="flex justify-center min-h-screen pt-[50px] bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:bg-white dark:from-white dark:via-gray-100 dark:to-gray-200">
+    return (    
+        <main className="flex flex-col min-h-screen pt-[50px] bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:bg-white dark:from-white dark:via-gray-1000 dark:to-gray-200">
             <div className="flex flex-col items-center">
                 <div>
                     <img src={avatarLogo} alt="imageLogo" className="w-40 h-40 rounded-full mb-[20px] mx-auto"/>
@@ -69,7 +73,7 @@ export default function Profile({search}) {
                     <p className="text-gray-500 font-mono">{author.email}</p>
                     <p className="text-gray-500 font-mono">{author.dataDiNascita}</p>
                 </div>
-                <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                     {filteredPosts.length > 0 ? (
                         filteredPosts.map((post) => (
                                 <div className="my-[24px] hover:animate-bounce-light-smooth" key={post._id}>
@@ -90,5 +94,5 @@ export default function Profile({search}) {
                 </div>
             </div>
         </main>    
-  )
+    )
 }

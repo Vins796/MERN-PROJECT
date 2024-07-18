@@ -10,72 +10,38 @@ import { getAuthorEmail } from "../services/api";
 
 export default function Navbar({search, handleChange}) {
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userData, setUserData] = useState(null);
-    const [author, setAuthor] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // Stato che controlla se l'utente è loggato
+    const [userData, setUserData] = useState(null); // Stato che contiene i dati dell'utente
+    const [author, setAuthor] = useState([]); // Stato che contiene i dati dell'autore
     const navigate = useNavigate();
 
-    // FUNZIONE PER CONTROLLARE LOGIN
-    // useEffect(() => {
-    //   const checkLoginStatus = () => {
-    //     const token = localStorage.getItem("token");
-    //     const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    //     setIsLoggedIn(!!token);
-    //     setUserData(storedUserData);
-    //   };
-  
-    //   checkLoginStatus();
-    //   window.addEventListener("storage", checkLoginStatus);
-  
-    //   return () => {
-    //     window.removeEventListener("storage", checkLoginStatus);
-    //   };
-    // }, []);
+    // EFFETTO CHE CONTROLLA LOGIN
     useEffect(() => {
       const checkLoginStatus = () => {
-        const token = localStorage.getItem("token");
-        const storedUserData = JSON.parse(localStorage.getItem("userData"));
-        setIsLoggedIn(!!token);
-        setUserData(storedUserData);
-        console.log("Stored user data:", storedUserData);
+        const token = localStorage.getItem("token"); // Controllo se il token è presente nel localStorage
+        const storedUserData = JSON.parse(localStorage.getItem("userData")); // Controllo se i dati dell'utente sono presenti nel localStorage
+        setIsLoggedIn(!!token); // Imposto lo stato di login a true se il token è presente nel localStorage
+        setUserData(storedUserData); // Imposto i dati dell'utente nello stato
+        // console.log("Stored user data:", storedUserData);
       };
     
-      checkLoginStatus();
-      window.addEventListener("storage", checkLoginStatus);
+      checkLoginStatus(); // Chiamo la funzione che controlla lo stato di login
+      window.addEventListener("storage", checkLoginStatus); // Aggiungo un listener che aggiorna lo stato di login quando il token viene modificato
     
       return () => {
-        window.removeEventListener("storage", checkLoginStatus);
+        window.removeEventListener("storage", checkLoginStatus); // Rimuovo il listener quando il componente viene rimosso
       };
     }, []);
 
-    // FUNZIONE PER OTTENERE DATI AUTORI
-    // useEffect(() => {
-    //   const fetchAuthor = async () => {
-    //     if (userData && userData.email) {
-    //       try {
-    //         const response = await getAuthorEmail(userData.email);
-    //         if (response && response.data) {
-    //           setAuthor(response.data);
-    //         } else {
-    //           console.error("Dati dell'autore non validi");
-    //         }
-    //       } catch (error) {
-    //         console.error("Errore nella richiesta dell'autore", error);
-    //       }
-    //     }
-    //   };
-  
-    //   fetchAuthor();
-    // }, [userData]); // EFFETTO CHE OTTENE DATI AUTORI
-
+    // EFFETTO CHE OTTENE DATI AUTORI
     useEffect(() => {
       const fetchAuthor = async () => {
-        console.log("fetchAuthor called, userData:", userData);
+        // console.log("fetchAuthor called, userData:", userData);
         if (userData && userData.email) {
           try {
-            console.log("Fetching author data for email:", userData.email);
-            const authorData = await getAuthorEmail(userData.email);
-            console.log("Author data received:", authorData);
+            // console.log("Fetching author data for email:", userData.email);
+            const authorData = await getAuthorEmail(userData.email); // Richiede i dati dell'autore
+            // console.log("Author data received:", authorData);
             if (authorData) {
               setAuthor(authorData);
             } else {
@@ -85,26 +51,28 @@ export default function Navbar({search, handleChange}) {
             console.error("Errore nella richiesta dell'autore", error);
           }
         } else {
-          console.log("userData o email mancante");
+          // console.log("userData o email mancante");
         }
       };
     
       fetchAuthor();
     }, [userData]);
 
+    // EFFETTO CHE STAMPA GLI AUTORI
     useEffect(() => {
       console.log("Author state:", author);
     }, [author]);
 
-    console.log("Author state:", userData);
+    // console.log("Author state:", userData);
+
     // FUNZIONE PER LOGOUT
     const handleLogout = () => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
-      setIsLoggedIn(false);
+      localStorage.removeItem("token"); // Rimuovo il token dal localStorage
+      localStorage.removeItem("userData"); // Rimuovo i dati dell'utente dal localStorage
+      setIsLoggedIn(false); // Imposto lo stato di login a false
       setUserData(null);
       setAuthor(null);
-      navigate("/login");
+      navigate("/login"); // Reindirizzo alla pagina di login
     };   
     
   return (
@@ -133,7 +101,7 @@ export default function Navbar({search, handleChange}) {
                         <DropdownHeader>
                           {author ? (
                               <>
-                                  <span className="block text-sm text-[#01FF84]">{author.nome} {author.cognome}</span>
+                                  <span className="block text-sm">{author.nome} {author.cognome}</span>
                                   <span className="block truncate text-sm font-medium">{author.email}</span>
                               </>
                         ) : (

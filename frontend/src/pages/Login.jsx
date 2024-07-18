@@ -8,42 +8,26 @@ export default function Login({ form, setForm }) {
   const navigate = useNavigate(); // Permette di navigare tra le pagine
   const location = useLocation(); // Per accedere ai parametri dell'URL corrente
 
-  
-  // useEffect(() => {
-  //   // Questo effect viene eseguito dopo il rendering del componente
-  //   // e ogni volta che location o navigate cambiano  
-  //   // Estraiamo i parametri dall'URL
-  //   const params = new URLSearchParams(location.search);
-  //   // Cerchiamo un parametro 'token' nell'URL
-  //   const token = params.get("token");
-  
-  //   if (token) {
-  //     console.log("Token ricevuto:", token);
-  //     // Se troviamo un token, lo salviamo nel localStorage
-  //     localStorage.setItem("token", token);
-  //     // Dispatchamo un evento 'storage' per aggiornare altri componenti che potrebbero dipendere dal token
-  //     window.dispatchEvent(new Event("storage"));
-  //     // Navighiamo alla home page
-  //     navigate("/");
-  //   }
-  // }, [location, navigate]); // Questo effect dipende da location e navigate
+  // Questo effect viene eseguito dopo il rendering del componente
+  // e ogni volta che location o navigate cambiano  
+  // Estraiamo i parametri dall'URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
   
     if (token) {
-      console.log("Token ricevuto:", token);
+      // console.log("Token ricevuto:", token);
       localStorage.setItem("token", token);
       
       // Decodifica il token per ottenere i dati dell'utente
       const decodedToken = JSON.parse(atob(token.split('.')[1]));
-      console.log("Dati utente decodificati:", decodedToken);
+      // console.log("Dati utente decodificati:", decodedToken);
       
       // Salva i dati dell'utente nel localStorage
       localStorage.setItem("userData", JSON.stringify({email: decodedToken.email}));
       
-      window.dispatchEvent(new Event("storage"));
-      navigate("/");
+      window.dispatchEvent(new Event("storage")); // Scatena un evento di storage per aggiornare componenti come la Navbar
+      navigate("/"); // Reindirizzo alla home page
     }
   }, [location, navigate]);
 
@@ -63,13 +47,13 @@ export default function Login({ form, setForm }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await loginUser(form);
-      console.log("Risposta dal server:", response);
-      localStorage.setItem("token", response.token);
-      localStorage.setItem("userData", JSON.stringify(form));
-      console.log("Token salvato nel localStorage:", localStorage.getItem("token"));
+      const response = await loginUser(form); // Invio il form al backend
+      // console.log("Risposta dal server:", response);
+      localStorage.setItem("token", response.token); // Salvo il token nel localStorage
+      localStorage.setItem("userData", JSON.stringify(form)); // Salvo i dati dell'utente nel localStorage
+      // console.log("Token salvato nel localStorage:", localStorage.getItem("token")); // Stampo il token nel console
       window.dispatchEvent(new Event("storage")); // Scatena un evento di storage per aggiornare componenti come la Navbar
-      navigate("/");
+      navigate("/"); // Reindirizzo alla home page
     } catch(err) {
       console.error('Errore nel login:', err);
     }

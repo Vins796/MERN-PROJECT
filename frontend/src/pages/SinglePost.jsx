@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createComment, getAuthorByEmail, getComments, getPost, getMe, deleteComment } from "../services/api";
+import { createComment, getAuthorByEmail, getComments, getPost, getMe, deleteComment, deletePost } from "../services/api";
 
 import { HandThumbUpIcon } from '@heroicons/react/24/outline';
 import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
+import DeleteModal from "../components/DeleteModal";
 
 export default function SinglePost() {
 
-  const navigate = useNavigate();
-  const [currentUserEmail, setCurrentUserEmail] = useState('');
+  const navigate = useNavigate(); // Permette di navigare tra le pagine
 
   // Imposto un counter a 0 per i like
   const [counter, setCounter] = useState(0);
@@ -16,6 +16,10 @@ export default function SinglePost() {
   const handleClick = () => {
     setCounter(counter + 1);
   };
+
+  const [isPostOwner, setIsPostOwner] = useState(false);
+  // Imposto lo stato del modal di cancellazione del post
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Imposto lo stato a false per la visualizzazione del form dei commenti
   const [isVisible, setIsVisible] = useState(false);
@@ -39,6 +43,8 @@ export default function SinglePost() {
     content: ''
   });
 
+  // Imposto lo stato delle email dell'utente
+  const [currentUserEmail, setCurrentUserEmail] = useState('');
   // Funzione per ottenere i dati dell'utente
   useEffect(() => {
     const fetchUserData = async () => {
@@ -50,12 +56,14 @@ export default function SinglePost() {
           name: `${user.nome} ${user.cognome}`.trim(),
           email: user.email || ''
         }));
+        // Controllo se l'utente è l'autore del post
+        setIsPostOwner(user.email === singlePost.author);
       } catch (error) {
         console.error("Errore nel recupero dei dati utente:", error);
       }
     };
     fetchUserData();
-  }, []);
+  }, [singlePost.author]);
   
   // Funzione per ottenere sia il post che i commenti
   useEffect(() => {
@@ -73,6 +81,27 @@ export default function SinglePost() {
     }
     fetchPostAndComments();
   }, [id]);
+
+  // Funzione per cancellare il post
+  const handleDeletePost = async () => {
+    try {
+      console.log("Deleting post with ID:", id);
+      const response = await deletePost(id);
+      const confirmDelete = window.confirm("Sei sicuro di voler eliminare il post?");
+      if (confirmDelete) {
+        console.log("Risposta del server:", response);
+        navigate("/");
+      }
+    } catch(err) {
+      console.error("Errore nella cancellazione del post:", err);
+    }      
+  };
+
+  // Funzione per modificare il post
+  const handleModifyPost = async () => {
+    console.log("Modifying post with ID:", id);
+
+  };
 
   // Funzione asincrona che gestisce l'invio del form dei commenti
   const handleCommentSubmit = async (e) => {
@@ -119,6 +148,7 @@ export default function SinglePost() {
     }
   };
 
+  // Funzione per navigare al profilo dell'autore
   const navigateToProfile = async (email) => {
     try {
       // console.log("Navigating to profile for email:", email);
@@ -153,47 +183,50 @@ export default function SinglePost() {
               <p className="font-mono mb-2 text-white dark:text-black">Autore: <span onClick={() => navigateToProfile(singlePost.author)} className="text-[#01FF84] dark:text-black cursor-pointer">{singlePost.author}</span></p>
               <p className="font-mono text-white dark:text-black">{singlePost.content}</p>
             </div>
-            <div class="flex items-center gap-2">
-              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 hover:text-white hover:bg-orange-400 dark:border-black text-white dark:text-black">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="mr-2 h-4 w-4"
-                >
-                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
-                  <path d="m15 5 4 4"></path>
-                </svg>
-                Modify
-              </button>
-              <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background h-10 px-4 py-2 text-red-500 hover:bg-red-500 hover:text-red-50 dark:border-black">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="mr-2 h-4 w-4"
-                >
-                  <path d="M3 6h18"></path>
-                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                  <line x1="10" x2="10" y1="11" y2="17"></line>
-                  <line x1="14" x2="14" y1="11" y2="17"></line>
-                </svg>
-                Delete
-              </button>
-            </div>
+            {isPostOwner && (
+              <div className="flex items-center gap-2">
+                <button onClick={() => handleModifyPost()} className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 hover:text-white hover:bg-orange-400 dark:border-black text-white dark:text-black">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="mr-2 h-4 w-4"
+                  >
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                    <path d="m15 5 4 4"></path>
+                  </svg>
+                  Modify
+                </button>
+                <button onClick={() => setIsDeleteModalOpen(true)} className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background h-10 px-4 py-2 text-red-500 hover:bg-red-500 hover:text-red-50 dark:border-black">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="mr-2 h-4 w-4"
+                  >
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg>
+                  Delete
+                </button>
+                {isDeleteModalOpen && <DeleteModal handleDeletePost={handleDeletePost} onClose={() => setIsDeleteModalOpen(false)}/>}
+              </div>
+            )}
           </div>
           
           <div className="flex items-center gap-[14px] mt-[14px]">
