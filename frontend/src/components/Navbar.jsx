@@ -41,7 +41,8 @@ export default function Navbar({search, handleChange}) {
           try {
             // console.log("Fetching author data for email:", userData.email);
             const authorData = await getAuthorEmail(userData.email); // Richiede i dati dell'autore
-            // console.log("Author data received:", authorData);
+            console.log("Author data received:", authorData);
+            console.log("Avatar URL:", authorData && authorData.avatar ? authorData.avatar : avatarLogo);
             if (authorData) {
               setAuthor(authorData);
             } else {
@@ -54,13 +55,15 @@ export default function Navbar({search, handleChange}) {
           // console.log("userData o email mancante");
         }
       };
-    
-      fetchAuthor();
-    }, [userData]);
+      
+      if (isLoggedIn) {
+        fetchAuthor();
+      }
+    }, [userData, isLoggedIn]);
 
     // EFFETTO CHE STAMPA GLI AUTORI
     useEffect(() => {
-      console.log("Author state:", author);
+      // console.log("Author state:", author);
     }, [author]);
 
     // console.log("Author state:", userData);
@@ -93,11 +96,20 @@ export default function Navbar({search, handleChange}) {
                         <button className="font-mono text-black text-[20px] bg-[#01FF84] px-[30px] py-[20px] hover:drop-shadow-xl hover:bg-black hover:border hover:border-[#01FF84] hover:text-white">+ New Post</button>
                     </Link>
                     <Dropdown
-                        label={<Avatar className="ms-5" alt="User settings" img={author.avatar || avatarLogo} rounded />}
+                        label={<img 
+                          alt="User settings"
+                          src={author && author.avatar ? author.avatar : ' '} // ci mette un po' di tempo per caricare l'immagine
+                          rounded
+                          className="ms-5 h-[60px] rounded-full"
+                          onError={(e) => {
+                            e.target.onerror = null; 
+                            e.target.src = '';
+                          }}
+                        />}
                         arrowIcon={false}
                         inline
                         >
-                          {console.log("Author state:", author)}
+                          {/* {console.log("Author state:", author)} */}
                         <DropdownHeader>
                           {author ? (
                               <>

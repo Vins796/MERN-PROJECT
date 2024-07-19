@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"; // Importo lo stato
 import { Link, useParams } from "react-router-dom"; // Importo Link e useParams
 import avatarLogo from '../assets/avatar.jpeg'; // Importo l'immagine
 import { getAuthor, getPostAuthor } from "../services/api"; // Importo le funzioni
+import { motion } from "framer-motion";
 
 export default function Profile({search}) {
 
@@ -53,7 +54,7 @@ export default function Profile({search}) {
             setPosts(response.data);
           } catch (error) {
             if (error.response && error.response.status === 404) {
-              console.log("Nessun post trovato per questo autore");
+            //   console.log("Nessun post trovato per questo autore");
               setPosts([]); // CASO IN CUI NON CI SONO POST
             } else {
               console.error("Errore nel recupero dei post:", error);
@@ -64,7 +65,11 @@ export default function Profile({search}) {
 
     return (    
         <main className="flex flex-col min-h-screen pt-[50px] bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:bg-white dark:from-white dark:via-gray-1000 dark:to-gray-200">
-            <div className="flex flex-col items-center">
+            <motion.div className="flex flex-col items-center"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+            >
                 <div>
                     <img src={avatarLogo} alt="imageLogo" className="w-40 h-40 rounded-full mb-[20px] mx-auto"/>
                 </div>
@@ -89,10 +94,12 @@ export default function Profile({search}) {
                                 </div>
                         ))
                     ) : (
-                        <p>Nessun post disponibile per questo autore.</p>
+                        <div className="grid grid-cols-1">
+                            <span className="text-3xl text-white mx-auto">Nessun post disponibile per questo autore.</span>
+                        </div>
                     )}
                 </div>
-            </div>
+            </motion.div>
         </main>    
     )
 }

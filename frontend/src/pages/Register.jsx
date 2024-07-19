@@ -28,15 +28,24 @@ export default function Register() {
 
   // Funzione per gestire il submit del form
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevenzione dell'evento di default
+    e.preventDefault();
     try {
-      // Chiamo la funzione per la registrazione dell'utente
-      await registerUser(form);
+      const formData = new FormData();
+      Object.keys(form).forEach(key => {
+        if (form[key]) {
+          if (key === 'avatar' && form[key] instanceof File) {
+            formData.append(key, form[key], form[key].name);
+          } else {
+            formData.append(key, form[key]);
+          }
+          console.log(`Appending to FormData: ${key}:`, form[key]);
+        }
+      });
+      await registerUser(formData);
       alert("Registrazione avvenuta con successo!");
-      console.log("Utente registrato con successo");
-      navigate('/login'); // Rimando l'utente alla pagina di login
+      navigate('/login');
     } catch(err) {
-      console.log("Errore nella registrazione", err.response?.data || err.message);
+      console.error("Errore nella registrazione", err.response?.data || err.message);
     }
   }
 

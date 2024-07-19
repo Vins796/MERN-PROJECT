@@ -94,7 +94,14 @@ router.get(
         console.log("Google auth callback - User:", req.user);
         // const token = await generateJWT({ id: req.user._id });
         const token = await generateJWT({ id: req.user._id, email: req.user.email });
-        res.redirect(`http://localhost:5173/login?token=${token}`);
+        const userData = {
+          id: req.user._id,
+          email: req.user.email,
+          nome: req.user.nome,
+          cognome: req.user.cognome,
+          avatar: req.user.avatar
+        };
+        res.redirect(`http://localhost:5173/login?token=${token}&userData=${encodeURIComponent(JSON.stringify(userData))}`);
       } catch (error) {
         console.error("Errore nella generazione del token:", error);
         res.redirect("/login?error=auth_failed");

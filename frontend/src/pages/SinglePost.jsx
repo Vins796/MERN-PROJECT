@@ -87,11 +87,9 @@ export default function SinglePost() {
     try {
       console.log("Deleting post with ID:", id);
       const response = await deletePost(id);
-      const confirmDelete = window.confirm("Sei sicuro di voler eliminare il post?");
-      if (confirmDelete) {
-        console.log("Risposta del server:", response);
-        navigate("/");
-      }
+      // console.log("Risposta del server:", response);
+      navigate("/");
+      
     } catch(err) {
       console.error("Errore nella cancellazione del post:", err);
     }      
@@ -108,12 +106,12 @@ export default function SinglePost() {
     e.preventDefault();    
     try {
       const createdComment = await createComment(id, newComment); 
-      console.log("Risposta del server per il nuovo commento:", createdComment);
+      // console.log("Risposta del server per il nuovo commento:", createdComment);
       
       if (createdComment && createdComment._id) {
         setComments(prevComments => [...prevComments, createdComment]);        
         setNewComment({name: "", email: "", content: ""});
-        console.log("Commento aggiunto con successo:", createdComment);
+        // console.log("Commento aggiunto con successo:", createdComment);
       } else {
         console.error("Risposta del server non valida:", createdComment);
       }
@@ -137,7 +135,7 @@ export default function SinglePost() {
     console.log("Deleting comment with ID:", commentId);
     try {
       const response = await deleteComment(id, commentId);
-      console.log("Risposta del server:", response);
+      // console.log("Risposta del server:", response);
       if (response.message === "Commento eliminato con successo!") {
         setComments(prevComments => prevComments.filter(comment => comment._id !== commentId));
       } else {
@@ -151,24 +149,21 @@ export default function SinglePost() {
   // Funzione per navigare al profilo dell'autore
   const navigateToProfile = async (email) => {
     try {
-      // console.log("Navigating to profile for email:", email);
       const response = await getAuthorByEmail(email);
-      // console.log("Author response:", response);
       if (response && response.data && response.data._id) {
         const authorId = response.data._id;
-        // console.log("Navigating to:", `/profile/${authorId}`);
         navigate(`/profile/${authorId}`);
       } else {
-        console.error("Invalid response structure:", response);
-        alert("Impossibile trovare il profilo dell'autore.");
+        // Autore non trovato
+        alert("Profilo autore non disponibile.");
       }
     } catch (error) {
       console.error("Errore nel recupero dell'ID dell'autore:", error);
-      if (error.response) {
-        console.error("Status:", error.response.status);
-        console.error("Data:", error.response.data);
+      if (error.response && error.response.status === 404) {
+        alert("Profilo autore inesistente.");
+      } else {
+        alert("Si è verificato un errore nel recupero del profilo dell'autore.");
       }
-      alert(`Si è verificato un errore nel recupero del profilo dell'autore: ${error.message}`);
     }
   };
 
@@ -177,7 +172,7 @@ export default function SinglePost() {
       <div>
         <img className="rounded-[20px] h-[500px] mx-auto w-[1000px]" src={singlePost.cover} alt={singlePost.title} />
         <div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-[30px] mt-[40px]">
             <div className="flex flex-col">
               <h1 className="text-3xl mt-5 mb-2 font-mono text-white dark:text-black">{singlePost.title}</h1>
               <p className="font-mono mb-2 text-white dark:text-black">Autore: <span onClick={() => navigateToProfile(singlePost.author)} className="text-[#01FF84] dark:text-black cursor-pointer">{singlePost.author}</span></p>

@@ -82,14 +82,21 @@ export const createComment = (id, commentData) =>
   api.post(`/blogPosts/${id}/comments`, commentData)
     .then(response => response.data);
 
-    export const deleteComment = (postId, commentId) => 
-      api.delete(`/blogPosts/${postId}/comments/${commentId}`)
-        .then(response => response.data);
+export const deleteComment = (postId, commentId) => 
+  api.delete(`/blogPosts/${postId}/comments/${commentId}`)
+    .then(response => response.data);
+
+
 // --------------------------------------------------------------------------------------------------------- //
 
 
 // Funzione per registrare un nuovo utente
-export const registerUser = (userData) => api.post("/authors", userData);
+export const registerUser = (userData) => {
+  console.log("Dati inviati al server:", userData);
+  return api.post("/authors", userData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
 
 // NEW: Funzione per effettuare il login di un utente
 export const loginUser = async (credentials) => {
@@ -104,29 +111,13 @@ export const loginUser = async (credentials) => {
 };
 
 // Funzione per ottenere l'autore con l'email specificata
-// export const getAuthorEmail = async (email) => {
-//   try {
-//     return api.get(`/authors/mail/${email}`).then(response => {
-//       console.log("Risposta completa da getAuthorEmail:", response.data);
-//       return response;
-//     });
-//   } catch(error) {
-//     console.error("Errore nella chiamata API di login:", error); // Log dell'errore per debugging
-//     throw error; // Lancia l'errore per essere gestito dal chiamante
-//   }
-// };
 export const getAuthorEmail = async (email) => {
-  console.log("getAuthorEmail called with email:", email);
   try {
-    const token = localStorage.getItem('token');
-    console.log("Token used for request:", token);
-    const response = await api.get(`/authors/mail/${email}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    console.log("getAuthorEmail response:", response.data);
+    const response = await api.get(`/authors/mail/${email}`);
+    console.log("Risposta completa da getAuthorEmail:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Errore in getAuthorEmail:", error.response || error);
+    console.error("Errore in getAuthorEmail:", error);
     throw error;
   }
 };
@@ -134,6 +125,7 @@ export const getAuthorEmail = async (email) => {
 // Funzione per ottenere i dati dell'utente attualmente autenticato
 export const getMe = () =>
   api.get("/auth/me").then((response) => response.data);
+
 
 // Funzione per ottenere i dati dell'utente attualmente autenticato con gestione degli errori
 export const getUserData = async () => {

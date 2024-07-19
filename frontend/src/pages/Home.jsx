@@ -35,7 +35,7 @@ export default function Home({search}) {
         }
         try {
             // Ritardo artificiale di 1.5 secondi
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await new Promise(resolve => setTimeout(resolve, 1000));
             const response = await getPosts(currentPage, limit, search);
             setPosts(response.data.blogPost); // Imposta i post
             setCurrentPage(response.data.currentPage); // Imposta la pagina corrente
@@ -101,7 +101,7 @@ export default function Home({search}) {
             {isLoggedIn ? ( // Controllo se l'utente è loggato
                 <main className="px-[10%] min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:bg-white dark:from-white dark:via-gray-100 dark:to-gray-200">
                     <div className="pt-[50px]">
-                        <h1 className="text-3xl font-mono text-white dark:text-black">Benvuenuto<span className="text-[#01FF84]">{authorData?.nome ? ` ${authorData.nome}!` : '!'}</span></h1>
+                        <h1 className="text-3xl font-mono text-white dark:text-black">Benvuenuto<span className="text-[#01FF84] dark:text-black">{authorData?.nome ? ` ${authorData.nome}!` : '!'}</span></h1>
                     </div>
                     <div className="mt-[30px] mb-[50px] grid grid-cols md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-[50px]">
                         {posts.length === 0 ? (

@@ -41,13 +41,16 @@ dotenv.config();
 // Crea un'istanza dell'applicazione Express
 const app = express();
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve i file statici della cartella uploads
+
 // Abilita CORS per tutte le richieste
 app.use(cors({
     origin: 'http://localhost:5173', // o l'URL del tuo frontend
     credentials: true
-  }));
+}));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Abilita il parsing dei dati del form
 
 // Inizializzazione di Express Session
 app.use(
@@ -70,6 +73,20 @@ app.use(
 // Inizializzazione di Passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Proxy per caricare le immagini da Google
+app.get('/proxy-image', async (req, res) => {
+    const { url } = req.query;
+    try {
+      const response = await fetch(url);
+      const buffer = await response.buffer();
+      res.set('Content-Type', response.headers.get('content-type'));
+      res.send(buffer);
+    } catch (error) {
+      console.error('Errore nel proxy dell\'immagine:', error);
+      res.status(500).send('Errore nel caricamento dell\'immagine');
+    }
+  });
 
 // Connette al database MongoDB usando l'URI
 mongoose.connect(process.env.MONGO_URI)

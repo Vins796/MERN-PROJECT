@@ -268,23 +268,6 @@ router.delete('/:id/comments/:commentId', async (req,res) => {
         res.status(400).json({ message: err.message });
     }
 });
-// router.delete('/:id/comments/:commentId', async (req, res) => {
-//     try {
-//       const post = await BlogPosts.findById(req.params.id);
-//       if (!post) {
-//         return res.status(404).json({ message: 'Post non trovato' });
-//       }
-//       const commentIndex = post.comments.findIndex(comment => comment._id.toString() === req.params.commentId);
-//       if (commentIndex === -1) {
-//         return res.status(404).json({ message: 'Commento non trovato' });
-//       }
-//       post.comments.splice(commentIndex, 1);
-//       await post.save();
-//       res.json({ message: 'Commento eliminato con successo' });
-//     } catch (err) {
-//       res.status(400).json({ message: err.message });
-//     }
-//   });
 
 // GET /blogPosts/author/:email - Recupera tutti i post di un autore specifico
 router.get('/author/:email', async (req, res) => {

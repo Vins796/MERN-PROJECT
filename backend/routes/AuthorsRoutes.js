@@ -4,6 +4,10 @@ import BlogPosts from '../models/BlogPosts.js'; // Importo il modello BlogPosts
 import cloudinaryUploader from "../config/cloudinaryConfig.js";
 import { authMiddleware } from "../midllewares/authMiddleware.js";
 
+import multer from 'multer';
+
+const upload = multer({ dest: 'uploads/' });
+
 
 const router = express.Router();
 
@@ -52,43 +56,6 @@ router.get('/:id', async (req,res) => {
         res.status(500).json({message: err.message});
 }});
 
-// router.get('/mail/:email', async (req, res) => {
-//     try {
-//         const { email } = req.params;
-
-//         if (!email) {
-//             return res.status(400).json({ message: "L'email è richiesta per la ricerca" });
-//         }
-
-//         const author = await Authors.findOne({ email: email });
-
-//         if (!author) {
-//             return res.status(404).json({ message: "Autore non trovato con questa email" });
-//         }
-
-//         res.json(author);
-//     } catch (error) {
-//         console.error("Errore durante la ricerca dell'autore:", error);
-//         res.status(500).json({ message: "Errore interno del server" });
-//     }
-// });
-// router.get('/mail/:email', async (req, res) => {
-//     console.log("GET /mail/:email route called");
-//     try {
-//       console.log("Richiesta ricevuta per email:", req.params.email);
-//       const author = await Authors.findOne({ email: req.params.email });
-//       console.log("Risultato della ricerca:", author);
-//       if (!author) {
-//         console.log("Autore non trovato");
-//         return res.status(404).json({ message: "Autore non trovato" });
-//       }
-//       console.log("Autore trovato:", author);
-//       res.json(author);
-//     } catch (error) {
-//       console.error("Errore durante la ricerca dell'autore:", error);
-//       res.status(500).json({ message: "Errore interno del server" });
-//     }
-//   });
 
 router.get('/mail/:email', authMiddleware, async (req, res) => {
   console.log("GET /mail/:email route called");
@@ -131,10 +98,15 @@ router.get('/author/:author', async (req, res) => {
 
 
 // POST /authors - Crea un nuovo autore
-router.post('/', async (req,res) => {
-    // Creo una nuova istanza del modello Authors utilizzando i dati forniti nel corpo della richiesta
+router.post('/', upload.single('avatar'), async (req,res) => {
+    console.log("Body:", req.body);
+    console.log("File:", req.file);
     try {
-        const author = new Authors(req.body); // Creo una nuova istanza del modello Authors utilizzando i dati forniti nel corpo della richiesta
+        const authorData = req.body;
+        if (req.file) {
+          authorData.avatar = req.file.path.replace(/\\/g, "/"); // Salva il percorso del file
+        }
+        const author = new Authors(authorData); // Creo una nuova istanza del modello Authors utilizzando i dati forniti nel corpo della richiesta
         const newAuthor = await author.save(); // Salvo i dati nel db
 
         // Rimuovi la password dalla risposta per sicurezza
@@ -143,6 +115,7 @@ router.post('/', async (req,res) => {
         
         res.status(201).json(authorResponse)
     } catch(err) {
+        console.error("Errore dettagliato:", err);
         res.status(400).json({message: err.message});
     }
 });

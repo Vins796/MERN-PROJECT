@@ -67,6 +67,11 @@ passport.use(
             });
             await author.save();
             console.log("New author saved:", author);
+          } else if (!author.avatar && profile.photos && profile.photos[0]) {
+            // Aggiorna l'avatar se non esiste
+            author.avatar = profile.photos[0].value;
+            await author.save();
+            console.log("Author avatar updated:", author);
           }
   
           done(null, author);

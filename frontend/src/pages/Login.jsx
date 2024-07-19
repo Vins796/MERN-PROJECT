@@ -2,6 +2,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import image from '../assets/logo.png'
 import { loginUser } from "../services/api";
 import { useEffect } from "react";
+import LoginGoogleButton from "../components/LoginGoogleButton";
+
+import { motion } from "framer-motion";
 
 export default function Login({ form, setForm }) {
 
@@ -14,18 +17,14 @@ export default function Login({ form, setForm }) {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
+    const userDataParam = params.get("userData");
   
-    if (token) {
+    if (token && userDataParam) {
+      const userData = JSON.parse(decodeURIComponent(userDataParam)); // Decodifica i dati dell'utente
       // console.log("Token ricevuto:", token);
       localStorage.setItem("token", token);
-      
-      // Decodifica il token per ottenere i dati dell'utente
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));
-      // console.log("Dati utente decodificati:", decodedToken);
-      
-      // Salva i dati dell'utente nel localStorage
-      localStorage.setItem("userData", JSON.stringify({email: decodedToken.email}));
-      
+      localStorage.setItem("userData", JSON.stringify(userData));
+      // console.log("Dati utente decodificati:", decodedToken);      
       window.dispatchEvent(new Event("storage")); // Scatena un evento di storage per aggiornare componenti come la Navbar
       navigate("/"); // Reindirizzo alla home page
     }
@@ -50,7 +49,7 @@ export default function Login({ form, setForm }) {
       const response = await loginUser(form); // Invio il form al backend
       // console.log("Risposta dal server:", response);
       localStorage.setItem("token", response.token); // Salvo il token nel localStorage
-      localStorage.setItem("userData", JSON.stringify(form)); // Salvo i dati dell'utente nel localStorage
+      localStorage.setItem("userData", JSON.stringify({email: form.email})); // Salvo i dati dell'utente nel localStorage
       // console.log("Token salvato nel localStorage:", localStorage.getItem("token")); // Stampo il token nel console
       window.dispatchEvent(new Event("storage")); // Scatena un evento di storage per aggiornare componenti come la Navbar
       navigate("/"); // Reindirizzo alla home page
@@ -62,7 +61,12 @@ export default function Login({ form, setForm }) {
 
   return (
     <div className="flex w-full min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <div className="flex items-center justify-center bg-black p-6 lg:p-10 rounded-lg w-[600px] h-[600px]">
+      <motion.div 
+        className="flex items-center justify-center bg-black p-6 lg:p-10 rounded-lg w-[600px] h-[600px]"
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="mx-auto w-full h-full space-y-6">
           <div className="text-center space-y-2">
             <Link to="/" className="inline-flex items-center gap-2">
@@ -85,13 +89,35 @@ export default function Login({ form, setForm }) {
               <label className="text-white font-mono" htmlFor="password">Password</label>
               <input name="password" type="password" id="password" required onChange={handleChange}/>
             </div>
-            <button type="submit" className="w-full bg-[#01FF84] p-2 rounded-lg font-mono">
-              Sign in
-            </button>
+            <motion.button
+              type="submit"
+              className="w-full border-[#01FF84] border-2 p-2 rounded-lg font-mono text-white relative overflow-hidden"
+              whileHover="hover"
+              initial="initial"
+            >
+              <motion.div
+                className="absolute inset-0 bg-[#01FF84]"
+                variants={{
+                  initial: { scaleX: 0 },
+                  hover: { scaleX: 1 }
+                }}
+                transition={{ duration: 0.5 }}
+                style={{ originX: 0 }}
+              />
+              <motion.span
+                className="relative z-10"
+                variants={{
+                  initial: { color: "#ffffff" },
+                  hover: { color: "#000000" }
+                }}
+              >
+                Sign in
+              </motion.span>
+            </motion.button>
           </form>
-            <button className="w-full bg-[#01FF84] p-2 rounded-lg font-mono" onClick={handleGoogleLogin}>Accedi con Google</button>
+          <LoginGoogleButton handleGoogleLogin={handleGoogleLogin} />
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
