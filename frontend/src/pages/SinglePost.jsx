@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createComment, getAuthorByEmail, getComments, getPost, getMe, deleteComment, deletePost } from "../services/api";
+import { createComment, getAuthorByEmail, getComments, getPost, getMe, deleteComment, deletePost, updatePost } from "../services/api";
 
 import { HandThumbUpIcon } from '@heroicons/react/24/outline';
 import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/outline';
 import DeleteModal from "../components/DeleteModal";
+import ModifyModal from "../components/ModifyModal";
 
 export default function SinglePost() {
 
@@ -20,6 +21,7 @@ export default function SinglePost() {
   const [isPostOwner, setIsPostOwner] = useState(false);
   // Imposto lo stato del modal di cancellazione del post
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isModifyModalOpen, setIsModifyModalOpen] = useState(false); // Imposto lo stato del modal di modifica del post
 
   // Imposto lo stato a false per la visualizzazione del form dei commenti
   const [isVisible, setIsVisible] = useState(false);
@@ -96,9 +98,15 @@ export default function SinglePost() {
   };
 
   // Funzione per modificare il post
-  const handleModifyPost = async () => {
-    console.log("Modifying post with ID:", id);
-
+  const handleModifySubmit = async (modifiedPost) => {
+    try {
+      const response = await updatePost(modifiedPost, id);
+      console.log("Post modificato con successo:", response);
+      setSinglePost(modifiedPost);
+      setIsModifyModalOpen(false);
+    } catch (error) {
+      console.error("Errore nella modifica del post:", error);
+    }
   };
 
   // Funzione asincrona che gestisce l'invio del form dei commenti
@@ -170,7 +178,7 @@ export default function SinglePost() {
   return (
     <div className="flex justify-center py-[60px] min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:bg-white dark:from-white dark:via-gray-100 dark:to-gray-200">
       <div>
-        <img className="rounded-[20px] h-[500px] mx-auto w-[1000px]" src={singlePost.cover} alt={singlePost.title} />
+        <img className="rounded-[20px] h-[500px] mx-auto w-[1000px] mt-[80px]" src={singlePost.cover} alt={singlePost.title} />
         <div>
           <div className="flex items-center justify-between gap-[30px] mt-[40px]">
             <div className="flex flex-col">
@@ -180,7 +188,7 @@ export default function SinglePost() {
             </div>
             {isPostOwner && (
               <div className="flex items-center gap-2">
-                <button onClick={() => handleModifyPost()} className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 hover:text-white hover:bg-orange-400 dark:border-black text-white dark:text-black">
+                <button onClick={() => setIsModifyModalOpen(true)} className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 hover:text-white hover:bg-orange-400 dark:border-black text-white dark:text-black">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -220,6 +228,7 @@ export default function SinglePost() {
                   Delete
                 </button>
                 {isDeleteModalOpen && <DeleteModal handleDeletePost={handleDeletePost} onClose={() => setIsDeleteModalOpen(false)}/>}
+                {isModifyModalOpen && <ModifyModal post={singlePost} onClose={() => setIsModifyModalOpen(false)} onModify={handleModifySubmit}/>}
               </div>
             )}
           </div>

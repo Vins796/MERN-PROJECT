@@ -3,9 +3,9 @@ export default function Pagination({ currentPage, setCurrentPage, totalPages, li
       <div className="flex justify-center pb-[50px]">
           <div className="flex flex-col items-center gap-[20px]">
               <div className="flex gap-[14px] items-center">
-                  <button className="font-mono border border-black text-black text-[20px] bg-[#01FF84] px-[15px] hover:drop-shadow-xl hover:bg-black hover:border hover:border-[#01FF84] hover:text-white" onClick={() => setCurrentPage((currentPage) => Math.max(currentPage -1, 1))} disabled={currentPage === 1}>Back</button>
+                  <button className=" cursor-pointer font-mono border border-black text-black text-[20px] bg-[#01FF84] px-[15px] hover:drop-shadow-xl hover:bg-black hover:border hover:border-[#01FF84] hover:text-white" onClick={() => setCurrentPage((currentPage) => Math.max(currentPage -1, 1))} disabled={currentPage === 1}>Back</button>
                   <span className="text-white font-mono dark:text-black">Pagina {currentPage} di {totalPages}</span>
-                  <button className="font-mono border border-black text-black text-[20px] bg-[#01FF84] px-[15px] hover:drop-shadow-xl hover:bg-black hover:border hover:border-[#01FF84] hover:text-white" onClick={() => setCurrentPage((currentPage) => Math.min(currentPage +1, totalPages))} disabled={currentPage === totalPages}>Next</button>
+                  <button className=" cursor-pointer font-mono border border-black text-black text-[20px] bg-[#01FF84] px-[15px] hover:drop-shadow-xl hover:bg-black hover:border hover:border-[#01FF84] hover:text-white" onClick={() => setCurrentPage((currentPage) => Math.min(currentPage +1, totalPages))} disabled={currentPage === totalPages}>Next</button>
               </div>
   
               <div>
@@ -18,5 +18,5 @@ export default function Pagination({ currentPage, setCurrentPage, totalPages, li
           </div>
       </div>
     )
-  }
+}
   

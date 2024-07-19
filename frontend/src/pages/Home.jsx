@@ -3,10 +3,11 @@ import { getPosts, getUserData } from "../services/api.js";
 import Post from "../components/Post";
 import Pagination from "../components/Pagination.jsx";
 import { useNavigate } from "react-router-dom";
+import { DarkThemeToggle } from "flowbite-react";
 
 // Scheletro dei post
 const PostSkeleton = () => (
-    <div className="bg-gray-800 rounded-lg shadow-md p-4 animate-pulse h-[340px]"></div>
+    <div className="bg-gray-800 rounded-lg shadow-md p-4 animate-pulse h-[300px] sm:h-[400px] md:h-[450px] lg:h-[500px] xl:h-[550px] w-full max-w-[350px] mb-6 mx-auto mt-6 sm:mt-6 md:mt-8 lg:mt-12 xl:mt-16"></div>
 );
 
 export default function Home({search}) {
@@ -98,31 +99,28 @@ export default function Home({search}) {
 
     return (
         <>
-            {isLoggedIn ? ( // Controllo se l'utente è loggato
-                <main className="px-[10%] min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:bg-white dark:from-white dark:via-gray-100 dark:to-gray-200">
-                    <div className="pt-[50px]">
-                        <h1 className="text-3xl font-mono text-white dark:text-black">Benvuenuto<span className="text-[#01FF84] dark:text-black">{authorData?.nome ? ` ${authorData.nome}!` : '!'}</span></h1>
+            {isLoggedIn ? (           
+                <main className="relative z-0 min-h-screen mx-auto bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200">
+                    <DarkThemeToggle className="mr-2 sm:mr-4 border border-black fixed bottom-4 right-4 sm:bottom-[50px] sm:right-[50px] z-10"/>
+                    <div className="pt-24 sm:pt-24 md:pt-28 lg:pt-32">
+                        <h1 className="lg:mt-5 text-center text-2xl sm:text-4xl font-mono text-white dark:text-black">
+                            Benvenuto<span className="text-[#01FF84] dark:text-black">{authorData?.nome ? ` ${authorData.nome}!` : '!'}</span>
+                        </h1>
                     </div>
-                    <div className="mt-[30px] mb-[50px] grid grid-cols md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-[50px]">
+                    <div className="mt-0 sm:mt-0 md:mt-0 lg:mt-0 mb-[50px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-0">
                         {posts.length === 0 ? (
-                            // Mostra gli scheletri durante il caricamento
-                            // limit = numero di scheletri da mostrare
-                            // fill = crea un array di dimensioni limitate
                             Array(limit).fill().map((_, index) => (
                                 <PostSkeleton key={index}/>
                             ))
-                            ) : (
+                        ) : (
                             <Post posts={posts} />
                         )}
                     </div>
                     <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPages={totalPages} limit={limit} setLimit={setLimit}/>
                 </main>
             ) : (
-                // Se l'utente non è loggato, reindirizza alla pagina di login
                 navigate("/login")
             )}
         </>
-        
-        
     )
 }

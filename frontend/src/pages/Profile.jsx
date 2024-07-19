@@ -64,38 +64,49 @@ export default function Profile({search}) {
     };
 
     return (    
-        <main className="flex flex-col min-h-screen pt-[50px] bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:bg-white dark:from-white dark:via-gray-1000 dark:to-gray-200">
+        <main className="flex flex-col min-h-screen pt-[50px] bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:bg-white dark:from-white dark:via-gray-100 dark:to-gray-200">
             <motion.div className="flex flex-col items-center"
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                <div>
+                <div className="mt-[80px]">
                     <img src={avatarLogo} alt="imageLogo" className="w-40 h-40 rounded-full mb-[20px] mx-auto"/>
                 </div>
-                <div className="text-center">
+                <div className="text-center mb-[30px]">
                     <h1 className="text-2xl font-bold font-mono text-white dark:text-black">{author.nome} {author.cognome}</h1>
                     <p className="text-gray-500 font-mono">{author.email}</p>
                     <p className="text-gray-500 font-mono">{author.dataDiNascita}</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[30px] mb-[50px]">
                     {filteredPosts.length > 0 ? (
                         filteredPosts.map((post) => (
-                                <div className="my-[24px] hover:animate-bounce-light-smooth" key={post._id}>
-                                    <Link to={`/post/${post._id}`} key={post._id}>
-                                        <div className="h-[340px]">
-                                            <img className="h-full rounded-t-[20px] w-full" src={post.cover} alt={post.title} />
+                            <motion.div 
+                                className="relative overflow-hidden rounded-[20px] h-[550px] max-w-[350px] mx-auto group"
+                                key={post._id}
+                                initial={{ opacity: 0, scale: 0.5 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                <Link to={`/post/${post._id}`}>
+                                    <div className="relative h-full w-full">
+                                        <img 
+                                            className="h-full w-full object-cover mt-[30px] rounded-[20px]" 
+                                            src={post.cover} 
+                                            alt={post.title} 
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
+                                        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                                            <h2 className="font-mono text-[22px] font-bold mb-2 line-clamp-2">{post.title}</h2>
+                                            <p className="font-mono text-xs line-clamp-3 mb-3">{post.content}</p>
                                         </div>
-                                        <div className="bg-black w-full rounded-b-[20px] p-4">
-                                            <h2 className="font-mono text-white text-[24px]">{post.title}</h2>
-                                            <p className="font-mono text-gray-400">Autore: {post.author}</p>
-                                        </div>
-                                    </Link>  
-                                </div>
+                                    </div>
+                                </Link>  
+                            </motion.div>
                         ))
                     ) : (
-                        <div className="grid grid-cols-1">
-                            <span className="text-3xl text-white mx-auto">Nessun post disponibile per questo autore.</span>
+                        <div className="col-span-full text-center">
+                            <span className="text-3xl text-white dark:text-black">Nessun post disponibile per questo autore.</span>
                         </div>
                     )}
                 </div>

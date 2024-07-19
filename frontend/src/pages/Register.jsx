@@ -68,11 +68,11 @@ export default function Register() {
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-2 flex flex-col">
               <label className="text-white font-mono" htmlFor="nome">Name</label>
-              <input name="nome" type="text" id="nome" placeholder="Name" required onChange={handleChange}/>
+              <input name="nome" type="text" id="nome" placeholder="Name" className="placeholder:italic" required onChange={handleChange}/>
             </div>
             <div className="space-y-2 flex flex-col">
               <label className="text-white font-mono" htmlFor="cognome">Surname</label>
-              <input name="cognome" type="text" id="cognome" placeholder="Cognome" required onChange={handleChange}/>
+              <input name="cognome" type="text" id="cognome" placeholder="Cognome" className="placeholder:italic" required onChange={handleChange}/>
             </div>
             <div className="space-y-2 flex flex-col">
               <label className="text-white font-mono" htmlFor="dataDiNascita">Date of Birth</label>
@@ -80,15 +80,15 @@ export default function Register() {
             </div>
             <div className="space-y-2 flex flex-col">
               <label className="text-white font-mono" htmlFor="avatar">Avatar</label>
-              <input name="avatar" type="file" id="avatar" required onChange={handleFileChange}/>
+              <input name="avatar" type="file" id="avatar" className="bg-white rounded p-2 placeholder:italic" required onChange={handleFileChange}/>
             </div>
             <div className="space-y-2 flex flex-col">
-              <label className="text-white font-mono" htmlFor="email">Email</label>
-              <input name="email" type="email" id="email" placeholder="m@example.com" required onChange={handleChange}/>
+              <label className="text-white font-mono after:content-['*'] after:text-red-500" htmlFor="email">Email</label>
+              <input name="email" type="email" id="email" placeholder="m@example.com" className="placeholder:italic" required onChange={handleChange}/>
             </div>
             <div className="space-y-2 flex flex-col">
               <label className="text-white font-mono" htmlFor="password">Password</label>
-              <input name="password" type="password" id="password" placeholder="Password" required onChange={handleChange}/>
+              <input name="password" type="password" id="password" placeholder="Password" className="placeholder:italic" required onChange={handleChange}/>
             </div>
             <button type="submit" className="w-full bg-[#01FF84] p-2 rounded-lg font-mono">
               Sign up

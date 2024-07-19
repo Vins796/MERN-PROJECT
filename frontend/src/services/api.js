@@ -114,7 +114,7 @@ export const loginUser = async (credentials) => {
 export const getAuthorEmail = async (email) => {
   try {
     const response = await api.get(`/authors/mail/${email}`);
-    console.log("Risposta completa da getAuthorEmail:", response.data);
+    // console.log("Risposta completa da getAuthorEmail:", response.data);
     return response.data;
   } catch (error) {
     console.error("Errore in getAuthorEmail:", error);

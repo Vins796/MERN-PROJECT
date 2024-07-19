@@ -33,10 +33,9 @@ export default function LoginGoogleButton({ handleGoogleLogin }) {
       <motion.div
         className="absolute bg-blue-700 rounded-full pointer-events-none"
         style={{
-          width: 200,
-          height: 200,
-          x: mousePosition.x - 100,
-          y: mousePosition.y - 0,
+          width: 199,
+          height: 199,
+          transform: `translate(${mousePosition.x - 260}px, ${mousePosition.y - 0}px)`,
           opacity: 0.5,
         }}
       />

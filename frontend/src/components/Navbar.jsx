@@ -1,12 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import logo from '../assets/strive_logo_color.svg';
-import avatarLogo from '../assets/avatar.jpeg';
-import { DarkThemeToggle } from "flowbite-react";
-import { Avatar, Dropdown, DropdownDivider, DropdownHeader, DropdownItem } from "flowbite-react";
+import { Dropdown, DropdownDivider, DropdownHeader, DropdownItem } from "flowbite-react";
 
 import SearchInput from "./SearchInput";
 import { useEffect, useState } from "react";
 import { getAuthorEmail } from "../services/api";
+import { Menu, X } from 'lucide-react';
 
 export default function Navbar({search, handleChange}) {
 
@@ -14,6 +13,9 @@ export default function Navbar({search, handleChange}) {
     const [userData, setUserData] = useState(null); // Stato che contiene i dati dell'utente
     const [author, setAuthor] = useState([]); // Stato che contiene i dati dell'autore
     const navigate = useNavigate();
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
     // EFFETTO CHE CONTROLLA LOGIN
     useEffect(() => {
@@ -41,8 +43,8 @@ export default function Navbar({search, handleChange}) {
           try {
             // console.log("Fetching author data for email:", userData.email);
             const authorData = await getAuthorEmail(userData.email); // Richiede i dati dell'autore
-            console.log("Author data received:", authorData);
-            console.log("Avatar URL:", authorData && authorData.avatar ? authorData.avatar : avatarLogo);
+            // console.log("Author data received:", authorData);
+            // console.log("Avatar URL:", authorData && authorData.avatar ? authorData.avatar : avatarLogo);
             if (authorData) {
               setAuthor(authorData);
             } else {
@@ -79,28 +81,27 @@ export default function Navbar({search, handleChange}) {
     };   
     
   return (
-    <nav className="flex justify-between items-center px-[10%] py-[50px] h-[80px] drop-shadow-lg bg-black gap-[30px] md:gap-0 ">
-        <div>
+    <nav className="fixed w-full flex justify-between items-center px-4 sm:px-6 md:px-8 lg:px-[10%] py-2 sm:py-4 h-16 sm:h-24 drop-shadow-lg bg-black z-50">
+        <div className="flex items-center">
             <Link to='/'>
-                <img className="h-[60px]" src={logo} alt="Strive logo" />
+                <img className="h-8 sm:h-12" src={logo} alt="Strive logo" />
             </Link>
         </div>
         {isLoggedIn ? (
             <>
-                <div>
+                <div className="hidden md:block mx-4">
                     <SearchInput search={search} handleChange={handleChange}/>
                 </div>
-                <div className="flex items-center">        
-                    <DarkThemeToggle className="mr-[30px] border border-[#01FF84]"/>
+                <div className="hidden md:flex items-center">        
                     <Link to='/create'>
-                        <button className="font-mono text-black text-[20px] bg-[#01FF84] px-[30px] py-[20px] hover:drop-shadow-xl hover:bg-black hover:border hover:border-[#01FF84] hover:text-white">+ New Post</button>
+                        <button className="font-mono text-2xl text-black bg-[#01FF84] px-3 sm:px-4 py-2 sm:py-4 hover:drop-shadow-xl hover:bg-black hover:border hover:border-[#01FF84] hover:text-white">+ New Post</button>
                     </Link>
                     <Dropdown
                         label={<img 
                           alt="User settings"
                           src={author && author.avatar ? author.avatar : ' '} // ci mette un po' di tempo per caricare l'immagine
-                          rounded
-                          className="ms-5 h-[60px] rounded-full"
+                          rounded="true"
+                          className="ms-3 sm:ms-5 h-8 sm:h-12 rounded-full"
                           onError={(e) => {
                             e.target.onerror = null; 
                             e.target.src = '';
@@ -126,6 +127,9 @@ export default function Navbar({search, handleChange}) {
                         <Link to='/login'><DropdownItem onClick={handleLogout}>Sign out</DropdownItem></Link>
                     </Dropdown>
                 </div>
+                <button className="md:hidden text-white" onClick={toggleMenu}>
+                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
             </>
         ) : (
             <ul className="flex items-center gap-[30px]">
@@ -140,7 +144,27 @@ export default function Navbar({search, handleChange}) {
                 </Link>
               </li>
             </ul>
-        )}        
+        )}  
+        {isMenuOpen && (
+                <div className="absolute top-full left-0 right-0 bg-black md:hidden">
+                    {isLoggedIn ? (
+                        <div className="flex flex-col p-4">
+                            <SearchInput search={search} handleChange={handleChange}/>
+                            <Link to='/create' className="my-2">
+                                <button className="w-full font-mono text-black text-sm bg-[#01FF84] px-3 py-2 hover:drop-shadow-xl hover:bg-black hover:border hover:border-[#01FF84] hover:text-white">+ New Post</button>
+                            </Link>
+                            <Link to='/' className="text-white py-2">Home</Link>
+                            <button onClick={() => navigate(`/profile/${author._id}`)} className="text-white text-left py-2">Profile</button>
+                            <button onClick={handleLogout} className="text-white text-left py-2">Sign out</button>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col p-4">
+                            <Link to="/login" className="text-white py-2">Login</Link>
+                            <Link to="/register" className="text-white py-2">Registrati</Link>
+                        </div>
+                    )}
+            </div>
+        )}      
     </nav>
   )
 }

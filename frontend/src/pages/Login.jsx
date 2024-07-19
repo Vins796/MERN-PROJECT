@@ -62,7 +62,7 @@ export default function Login({ form, setForm }) {
   return (
     <div className="flex w-full min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <motion.div 
-        className="flex items-center justify-center bg-black p-6 lg:p-10 rounded-lg w-[600px] h-[600px]"
+        className="flex items-center justify-center bg-black p-6 lg:p-10 rounded-lg w-[600px] h-[600px] mt-[90px] md:mt-[50px] lg:mt-[50px]"
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
@@ -83,11 +83,11 @@ export default function Login({ form, setForm }) {
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-2 flex flex-col">
               <label className="text-white font-mono" htmlFor="email">Email</label>
-              <input name="email" type="email" id="email" placeholder="m@example.com" required onChange={handleChange}/>
+              <input name="email" type="email" id="email" placeholder="m@example.com" className="placeholder:italic" required onChange={handleChange}/>
             </div>
             <div className="space-y-2 flex flex-col">
               <label className="text-white font-mono" htmlFor="password">Password</label>
-              <input name="password" type="password" id="password" required onChange={handleChange}/>
+              <input name="password" type="password" id="password" placeholder="Password" className="placeholder:italic" required onChange={handleChange}/>
             </div>
             <motion.button
               type="submit"

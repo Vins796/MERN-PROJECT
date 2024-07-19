@@ -11,7 +11,7 @@ export default function SearchInput({ search, handleChange }) {
 
   return (
     <div className="relative flex items-center">
-      <div className="rounded-full border p-[10px]">
+      <div className="rounded-full p-[10px]">
         <MagnifyingGlassIcon 
           className="h-6 w-6 cursor-pointer text-[#01FF84]" 
           onClick={toggleExpand}
@@ -31,7 +31,7 @@ export default function SearchInput({ search, handleChange }) {
               placeholder="Search..."
               value={search}
               onChange={handleChange}
-              className='bg-slate-200 rounded-lg py-[10px] pl-[15px] pr-[15px] focus:outline-none ml-2'
+              className='bg-slate-200 py-[10px] pl-[15px] pr-[15px] focus:outline-none ml-2'
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
