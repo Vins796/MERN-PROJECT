@@ -103,7 +103,7 @@ export default function Navbar({search, handleChange}) {
                           alt="User settings"
                           src={author && author.avatar ? author.avatar : defaultAvatar} // ci mette un po' di tempo per caricare l'immagine
                           rounded="true"
-                          className="ms-3 sm:ms-5 h-8 sm:h-12 rounded-full"
+                          className="ms-3 sm:ms-5 h-8 sm:h-12 rounded-full border-2 border-white"
                           onError={(e) => {
                             e.target.onerror = null; 
                             e.target.src = defaultAvatar;

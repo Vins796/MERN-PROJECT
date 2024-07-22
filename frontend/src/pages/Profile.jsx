@@ -72,7 +72,7 @@ export default function Profile({search}) {
                 transition={{ duration: 0.5 }}
             >
                 <div className="mt-[80px]">
-                    <img src={author.avatar || avatarLogo} alt="imageLogo" className="w-40 h-40 rounded-full mb-[20px] mx-auto"/>
+                    <img src={author.avatar || avatarLogo} alt="imageLogo" className="w-40 h-40 rounded-full mb-[20px] mx-auto border-2 border-white"/>
                 </div>
                 <div className="text-center mb-[30px]">
                     <h1 className="text-2xl font-bold font-mono text-white dark:text-black">{author.nome} {author.cognome}</h1>
