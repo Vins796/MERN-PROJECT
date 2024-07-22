@@ -18,6 +18,8 @@ import { Flowbite } from "flowbite-react";
 import { useEffect, useState } from "react";
 import Profile from "./pages/Profile";
 
+import { DarkThemeToggle } from "flowbite-react";
+
 export default function App() {
 
   // STATO PER LA RICERCA
@@ -61,6 +63,7 @@ export default function App() {
           <Route path="/profile/:id" element={<Profile search={search}/>}></Route>
           <Route path="*" element={<NotFound />}></Route>
         </Routes>
+        <DarkThemeToggle className="mr-2 sm:mr-4 border border-black fixed bottom-4 right-4 sm:bottom-[50px] sm:right-[50px] z-10"/>
         {/* Footer renderizzato in tutte le pagine */}
         <Footer />
       </Router>
