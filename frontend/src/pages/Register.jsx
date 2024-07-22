@@ -27,25 +27,43 @@ export default function Register() {
   };
 
   // Funzione per gestire il submit del form
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     // Creo un nuovo FormData
+  //     const formData = new FormData();
+  //     // Per ogni chiave del form, se il valore è presente, lo appendo al FormData
+  //     Object.keys(form).forEach(key => { 
+  //       if (form[key]) { // Controllo se il valore è presente
+  //         if (key === 'avatar' && form[key] instanceof File) { // Controllo se la chiave è l'avatar e se il valore è un file
+  //           formData.append(key, form[key], form[key].name); // Appendo il valore al FormData
+  //         } else {
+  //           formData.append(key, form[key]);
+  //         }
+  //         console.log(`Appending to FormData: ${key}:`, form[key]); // Mostro il valore che viene aggiunto al FormData
+  //       }
+  //     });
+  //     await registerUser(formData); // Invio i dati al server
+  //     alert("Registrazione avvenuta con successo!"); // Mostro un messaggio di conferma
+  //     navigate('/login'); // Reindirizzo l'utente alla pagina di login
+  //   } catch(err) {
+  //     console.error("Errore nella registrazione", err.response?.data || err.message);
+  //   }
+  // }
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Creo un nuovo FormData
       const formData = new FormData();
-      // Per ogni chiave del form, se il valore è presente, lo appendo al FormData
-      Object.keys(form).forEach(key => { 
-        if (form[key]) { // Controllo se il valore è presente
-          if (key === 'avatar' && form[key] instanceof File) { // Controllo se la chiave è l'avatar e se il valore è un file
-            formData.append(key, form[key], form[key].name); // Appendo il valore al FormData
-          } else {
-            formData.append(key, form[key]);
-          }
-          console.log(`Appending to FormData: ${key}:`, form[key]); // Mostro il valore che viene aggiunto al FormData
+      Object.keys(form).forEach(key => {
+        if (form[key]) {
+          formData.append(key, form[key]);
         }
       });
-      await registerUser(formData); // Invio i dati al server
-      alert("Registrazione avvenuta con successo!"); // Mostro un messaggio di conferma
-      navigate('/login'); // Reindirizzo l'utente alla pagina di login
+      console.log("Dati inviati al server:", Object.fromEntries(formData));
+      const response = await registerUser(formData);
+      console.log("Risposta del server:", response);
+      alert("Registrazione avvenuta con successo!");
+      navigate('/login');
     } catch(err) {
       console.error("Errore nella registrazione", err.response?.data || err.message);
     }

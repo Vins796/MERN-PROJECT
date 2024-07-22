@@ -25,6 +25,7 @@ export default function Navbar({search, handleChange}) {
         if (token) {
           try {
             const userData = await getUserData(); // Richiede i dati dell'utente
+            console.log("Dati utente ricevuti in Navbar:", userData);
             setIsLoggedIn(true); // Imposta lo stato di login a true
             setUserData(userData); // Imposta i dati dell'utente nello stato
             localStorage.setItem("userData", JSON.stringify(userData));
@@ -53,15 +54,38 @@ export default function Navbar({search, handleChange}) {
     }, []); 
 
     // EFFETTO CHE OTTENE DATI AUTORI
+    // useEffect(() => {
+    //   const fetchAuthor = async () => {
+    //     // console.log("fetchAuthor called, userData:", userData);
+    //     if (userData && userData.email) {
+    //       try {
+    //         // console.log("Fetching author data for email:", userData.email);
+    //         const authorData = await getAuthorEmail(userData.email); // Richiede i dati dell'autore
+    //         // console.log("Author data received:", authorData);
+    //         // console.log("Avatar URL:", authorData && authorData.avatar ? authorData.avatar : avatarLogo);
+    //         if (authorData) {
+    //           setAuthor(authorData);
+    //         } else {
+    //           console.error("Dati dell'autore non validi");
+    //         }
+    //       } catch (error) {
+    //         console.error("Errore nella richiesta dell'autore", error);
+    //       }
+    //     } else {
+    //       // console.log("userData o email mancante");
+    //     }
+    //   };
+      
+    //   if (isLoggedIn) {
+    //     fetchAuthor();
+    //   }
+    // }, [userData, isLoggedIn]);
     useEffect(() => {
       const fetchAuthor = async () => {
-        // console.log("fetchAuthor called, userData:", userData);
         if (userData && userData.email) {
           try {
-            // console.log("Fetching author data for email:", userData.email);
-            const authorData = await getAuthorEmail(userData.email); // Richiede i dati dell'autore
-            // console.log("Author data received:", authorData);
-            // console.log("Avatar URL:", authorData && authorData.avatar ? authorData.avatar : avatarLogo);
+            const authorData = await getAuthorEmail(userData.email);
+            console.log("Dati autore ricevuti:", authorData);
             if (authorData) {
               setAuthor(authorData);
             } else {
@@ -70,8 +94,6 @@ export default function Navbar({search, handleChange}) {
           } catch (error) {
             console.error("Errore nella richiesta dell'autore", error);
           }
-        } else {
-          // console.log("userData o email mancante");
         }
       };
       
@@ -121,6 +143,7 @@ export default function Navbar({search, handleChange}) {
                           rounded="true"
                           className="ms-3 sm:ms-5 h-8 sm:h-12 rounded-full"
                           onError={(e) => {
+                            console.error("Errore nel caricamento dell'avatar:", e);
                             e.target.onerror = null; 
                             e.target.src = '';
                           }}

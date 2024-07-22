@@ -128,15 +128,24 @@ export const getMe = () =>
 
 
 // Funzione per ottenere i dati dell'utente attualmente autenticato con gestione degli errori
+// export const getUserData = async () => {
+//   try {
+//     const response = await api.get("/auth/me"); // Effettua la richiesta per ottenere i dati dell'utente
+//     return response.data; // Restituisce i dati della risposta
+//   } catch (error) {
+//     console.error("Errore nel recupero dei dati utente:", error); // Log dell'errore per debugging
+//     throw error; // Lancia l'errore per essere gestito dal chiamante
+//   }
+// };
 export const getUserData = async () => {
   try {
-    const response = await api.get("/auth/me"); // Effettua la richiesta per ottenere i dati dell'utente
-    return response.data; // Restituisce i dati della risposta
+    const response = await api.get("/auth/me");
+    console.log("Dati utente ricevuti:", response.data);
+    return response.data;
   } catch (error) {
-    console.error("Errore nel recupero dei dati utente:", error); // Log dell'errore per debugging
-    throw error; // Lancia l'errore per essere gestito dal chiamante
+    console.error("Errore nel recupero dei dati utente:", error);
+    throw error;
   }
 };
-
 
 export default api;
