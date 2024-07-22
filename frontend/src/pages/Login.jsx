@@ -41,7 +41,7 @@ export default function Login({ form, setForm }) {
   // Funzione per gestire il login con Google
   const handleGoogleLogin = () => {
     // Reindirizziamo l'utente all'endpoint del backend che inizia il processo di autenticazione Google
-    window.location.href = `${API_URL}/auth/google`;
+    window.location.href = `${API_URL}/api/auth/google`;
   };
   
 

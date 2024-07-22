@@ -52,10 +52,10 @@ router.get("/me", authMiddleware, (req, res) => {
 });
 
 // Rotta per iniziare il processo di autenticazione Google
-router.get(
-    "/google",
-    passport.authenticate("google", { scope: ["profile", "email"] })
-);
+// router.get(
+//     "/google",
+//     passport.authenticate("google", { scope: ["profile", "email"] })
+// );
 
 
 // Questo endpoint inizia il flusso di autenticazione OAuth con Google
