@@ -63,7 +63,7 @@ export default function Login({ form, setForm }) {
 
 
   return (
-    <div className="flex w-full min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="flex w-full min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200">
       <motion.div 
         className="flex items-center justify-center bg-black p-6 lg:p-10 rounded-lg w-[600px] h-[600px] mt-[90px] md:mt-[50px] lg:mt-[50px]"
         initial={{ opacity: 0, scale: 0.5 }}
