@@ -107,7 +107,7 @@ export default function Home({search}) {
                             Benvenuto<span className="text-[#01FF84] dark:text-black">{authorData?.nome ? ` ${authorData.nome}!` : '!'}</span>
                         </h1>
                     </div>
-                    <div className="max-w-8xl mt-0 sm:mt-0 md:mt-0 lg:mt-0 mb-[50px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-0">
+                    <div className="max-w-8xl mx-auto mt-0 sm:mt-0 md:mt-0 lg:mt-0 mb-[50px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-0">
                         {posts.length === 0 ? (
                             Array(limit).fill().map((_, index) => (
                                 <PostSkeleton key={index}/>
