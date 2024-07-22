@@ -43,7 +43,6 @@ router.get('/', async (req, res) => {
 // GET /authors/:id - Recupera un singolo autore per ID
 router.get('/:id', async (req,res) => {
     try {
-        console.log("Ricerca autore con ID:", req.params.id);
         // Cerco l'autore specifico
         const author = await Authors.findById(req.params.id);
         // Se l'autore non esiste -> restituisco l'errore
@@ -62,7 +61,7 @@ router.get('/mail/:email', authMiddleware, async (req, res) => {
   console.log("GET /mail/:email route called");
   try {
     console.log("Richiesta ricevuta per email:", req.params.email);
-    const author = await Authors.findOne({ email: req.params.email }).select('+avatar');
+    const author = await Authors.findOne({ email: req.params.email });
     console.log("Risultato della ricerca:", author);
     if (!author) {
       console.log("Autore non trovato");
@@ -105,7 +104,7 @@ router.post('/', upload.single('avatar'), async (req,res) => {
     try {
         const authorData = req.body;
         if (req.file) {
-          authorData.avatar = `${process.env.BACKEND_URL}/${req.file.path.replace(/\\/g, "/")}`; // Salva il percorso del file
+          authorData.avatar = req.file.path.replace(/\\/g, "/"); // Salva il percorso del file
         }
         const author = new Authors(authorData); // Creo una nuova istanza del modello Authors utilizzando i dati forniti nel corpo della richiesta
         const newAuthor = await author.save(); // Salvo i dati nel db
