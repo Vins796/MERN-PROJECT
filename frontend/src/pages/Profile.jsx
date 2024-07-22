@@ -71,7 +71,7 @@ export default function Profile({search}) {
                 transition={{ duration: 0.5 }}
             >
                 <div className="mt-[80px]">
-                    <img src={avatarLogo} alt="imageLogo" className="w-40 h-40 rounded-full mb-[20px] mx-auto"/>
+                    <img src={author.avatar} alt="imageLogo" className="w-40 h-40 rounded-full mb-[20px] mx-auto"/>
                 </div>
                 <div className="text-center mb-[30px]">
                     <h1 className="text-2xl font-bold font-mono text-white dark:text-black">{author.nome} {author.cognome}</h1>
@@ -106,7 +106,7 @@ export default function Profile({search}) {
                         ))
                     ) : (
                         <div className="col-span-full text-center">
-                            <span className="text-3xl text-white dark:text-black">Nessun post disponibile per questo autore.</span>
+                            <span className="text-3xl text-white dark:text-black">Nessun post disponibile/esistente per questo autore.</span>
                         </div>
                     )}
                 </div>

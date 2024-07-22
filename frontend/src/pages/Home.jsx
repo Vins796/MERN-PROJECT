@@ -100,7 +100,7 @@ export default function Home({search}) {
     return (
         <>
             {isLoggedIn ? (           
-                <main className="relative z-0 min-h-screen mx-auto bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200">
+                <main className="relative max-w-8xl z-0 min-h-screen mx-auto bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200">
                     <DarkThemeToggle className="mr-2 sm:mr-4 border border-black fixed bottom-4 right-4 sm:bottom-[50px] sm:right-[50px] z-10"/>
                     <div className="pt-24 sm:pt-24 md:pt-28 lg:pt-32">
                         <h1 className="lg:mt-5 text-center text-2xl sm:text-4xl font-mono text-white dark:text-black">
