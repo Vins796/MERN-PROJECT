@@ -26,7 +26,7 @@ export default function LoginGoogleButton({ handleGoogleLogin }) {
       ref={buttonRef}
       onClick={handleGoogleLogin}
       onMouseMove={handleMouseMove}
-      className="w-full text-black mx-auto justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 flex items-center gap-2 relative overflow-hidden"
+      className="w-full text-white mx-auto justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 flex items-center gap-2 relative overflow-hidden"
     >
       <motion.div
         className="absolute bg-blue-700 rounded-full pointer-events-none"
