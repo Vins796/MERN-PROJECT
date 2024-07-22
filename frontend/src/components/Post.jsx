@@ -24,7 +24,7 @@ export default function Post({posts}) {
                                 alt={post.title} 
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
-                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                            <div className="absolute bottom-0 left-0 right-0 p-8 text-white text-center">
                                 <h2 className="font-mono text-[22px] font-bold mb-2 line-clamp-2">{post.title}</h2>
                                 <p className="font-mono text-xs line-clamp-3 mb-3">{post.content}</p>
                             </div>
