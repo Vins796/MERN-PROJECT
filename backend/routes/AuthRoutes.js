@@ -52,10 +52,10 @@ router.get("/me", authMiddleware, (req, res) => {
 });
 
 // Rotta per iniziare il processo di autenticazione Google
-// router.get(
-//     "/google",
-//     passport.authenticate("google", { scope: ["profile", "email"] })
-// );
+router.get(
+    "/google",
+    passport.authenticate("google", { scope: ["profile", "email"] })
+);
 
 
 // Questo endpoint inizia il flusso di autenticazione OAuth con Google
@@ -65,10 +65,14 @@ router.get("/me", authMiddleware, (req, res) => {
 
 router.get(
     "/google/callback",
+    (req,res,next) => {
+      console.log("Google callback route reached");
+      next();
+    },
     passport.authenticate("google", { failureRedirect: `${FRONTEND_URL}/login` }),
     async (req, res) => {
       try {
-        console.log("Google auth callback - User:", req.user);
+        console.log("Google auth callback - User:",  req.user);
         // const token = await generateJWT({ id: req.user._id });
         const token = await generateJWT({ id: req.user._id, email: req.user.email });
         const userData = {
