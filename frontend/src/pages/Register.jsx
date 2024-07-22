@@ -51,7 +51,7 @@ export default function Register() {
 
   return (
     <div className="flex w-full min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <div className="flex items-center justify-center bg-black rounded-lg w-[600px]">
+      <div className="mt-8 flex items-center justify-center bg-black rounded-lg w-[600px]">
         <div className="mx-auto w-full h-full space-y-6 p-12">
           <div className="text-center space-y-2">
             <Link to="/" className="inline-flex items-center gap-2">
