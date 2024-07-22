@@ -143,7 +143,7 @@ export const getUserData = async () => {
     console.log("Dati utente ricevuti:", response.data);
     return response.data;
   } catch (error) {
-    console.error("Errore nel recupero dei dati utente:", error);
+    console.error("Errore nel recupero dei dati utente:", error.response || error);
     throw error;
   }
 };

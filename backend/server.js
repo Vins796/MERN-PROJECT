@@ -41,8 +41,8 @@ dotenv.config();
 // Crea un'istanza dell'applicazione Express
 const app = express();
 
-// app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve i file statici della cartella uploads
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve i file statici della cartella uploads
+
 
 // Abilita CORS per tutte le richieste
 // Configurazione CORS

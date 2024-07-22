@@ -6,6 +6,7 @@ import SearchInput from "./SearchInput";
 import { useEffect, useState } from "react";
 import { getAuthorEmail, getUserData } from "../services/api";
 import { Menu, X } from 'lucide-react';
+import defaultAvatar from '../assets/avatar.jpeg';
 
 export default function Navbar({search, handleChange}) {
 
@@ -139,13 +140,13 @@ export default function Navbar({search, handleChange}) {
                     <Dropdown
                         label={<img 
                           alt="User settings"
-                          src={author && author.avatar ? author.avatar : ' '} // ci mette un po' di tempo per caricare l'immagine
+                          src={author && author.avatar ? `${process.env.REACT_APP_API_URL}/${author.avatar}` : defaultAvatar} // ci mette un po' di tempo per caricare l'immagine
                           rounded="true"
                           className="ms-3 sm:ms-5 h-8 sm:h-12 rounded-full"
                           onError={(e) => {
                             console.error("Errore nel caricamento dell'avatar:", e);
                             e.target.onerror = null; 
-                            e.target.src = '';
+                            e.target.src = defaultAvatar;
                           }}
                         />}
                         arrowIcon={false}

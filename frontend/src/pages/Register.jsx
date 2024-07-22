@@ -59,6 +59,9 @@ export default function Register() {
           formData.append(key, form[key]);
         }
       });
+      if (form.avatar) {
+        formData.append('avatar', form.avatar);
+      }
       console.log("Dati inviati al server:", Object.fromEntries(formData));
       const response = await registerUser(formData);
       console.log("Risposta del server:", response);
