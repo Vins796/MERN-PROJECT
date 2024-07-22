@@ -4,7 +4,7 @@ import { Dropdown, DropdownDivider, DropdownHeader, DropdownItem } from "flowbit
 
 import SearchInput from "./SearchInput";
 import { useEffect, useState } from "react";
-import { getAuthorEmail } from "../services/api";
+import { getAuthorEmail, getUserData } from "../services/api";
 import { Menu, X } from 'lucide-react';
 
 export default function Navbar({search, handleChange}) {
@@ -18,22 +18,54 @@ export default function Navbar({search, handleChange}) {
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
     // EFFETTO CHE CONTROLLA LOGIN
+    // useEffect(() => {
+    //   const checkLoginStatus = () => {
+    //     const token = localStorage.getItem("token"); // Controllo se il token è presente nel localStorage
+    //     const storedUserData = JSON.parse(localStorage.getItem("userData")); // Controllo se i dati dell'utente sono presenti nel localStorage
+    //     setIsLoggedIn(!!token); // Imposto lo stato di login a true se il token è presente nel localStorage
+    //     setUserData(storedUserData); // Imposto i dati dell'utente nello stato
+    //     // console.log("Stored user data:", storedUserData);
+    //   };
+    
+    //   checkLoginStatus(); // Chiamo la funzione che controlla lo stato di login
+    //   window.addEventListener("storage", checkLoginStatus); // Aggiungo un listener che aggiorna lo stato di login quando il token viene modificato
+    
+    //   return () => {
+    //     window.removeEventListener("storage", checkLoginStatus); // Rimuovo il listener quando il componente viene rimosso
+    //   };
+    // }, []);
     useEffect(() => {
-      const checkLoginStatus = () => {
-        const token = localStorage.getItem("token"); // Controllo se il token è presente nel localStorage
-        const storedUserData = JSON.parse(localStorage.getItem("userData")); // Controllo se i dati dell'utente sono presenti nel localStorage
-        setIsLoggedIn(!!token); // Imposto lo stato di login a true se il token è presente nel localStorage
-        setUserData(storedUserData); // Imposto i dati dell'utente nello stato
-        // console.log("Stored user data:", storedUserData);
+      const checkLoginStatus = async () => {
+        const token = localStorage.getItem("token");
+        if (token) {
+          try {
+            const userData = await getUserData();
+            setIsLoggedIn(true);
+            setUserData(userData);
+            localStorage.setItem("userData", JSON.stringify(userData));
+          } catch (error) {
+            console.error("Token non valido o errore nel recupero dei dati:", error);
+            localStorage.removeItem("token");
+            localStorage.removeItem("userData");
+            setIsLoggedIn(false);
+            setUserData(null);
+          }
+        } else {
+          setIsLoggedIn(false);
+          setUserData(null);
+        }
       };
     
-      checkLoginStatus(); // Chiamo la funzione che controlla lo stato di login
-      window.addEventListener("storage", checkLoginStatus); // Aggiungo un listener che aggiorna lo stato di login quando il token viene modificato
+      checkLoginStatus();
+    
+      window.addEventListener("storage", checkLoginStatus);
+      window.addEventListener("loginStateChange", checkLoginStatus);
     
       return () => {
-        window.removeEventListener("storage", checkLoginStatus); // Rimuovo il listener quando il componente viene rimosso
+        window.removeEventListener("storage", checkLoginStatus);
+        window.removeEventListener("loginStateChange", checkLoginStatus);
       };
-    }, []);
+    }, []); 
 
     // EFFETTO CHE OTTENE DATI AUTORI
     useEffect(() => {
@@ -78,6 +110,7 @@ export default function Navbar({search, handleChange}) {
       setUserData(null);
       setAuthor(null);
       navigate("/login"); // Reindirizzo alla pagina di login
+      window.dispatchEvent(new Event("loginStateChange"));
     };   
     
   return (

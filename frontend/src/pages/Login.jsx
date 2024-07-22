@@ -3,8 +3,11 @@ import image from '../assets/logo.png'
 import { loginUser } from "../services/api";
 import { useEffect } from "react";
 import LoginGoogleButton from "../components/LoginGoogleButton";
-
 import { motion } from "framer-motion";
+
+// Importa l'URL dell'API dalla variabile d'ambiente
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+
 
 export default function Login({ form, setForm }) {
 
@@ -38,7 +41,7 @@ export default function Login({ form, setForm }) {
   // Funzione per gestire il login con Google
   const handleGoogleLogin = () => {
     // Reindirizziamo l'utente all'endpoint del backend che inizia il processo di autenticazione Google
-    window.location.href = "http://localhost:5001/api/auth/google";
+    window.location.href = `${API_URL}/auth/google`;
   };
   
 
