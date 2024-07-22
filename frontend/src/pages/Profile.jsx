@@ -37,6 +37,7 @@ export default function Profile({search}) {
         }
     }, [posts, search]);
 
+    // Funzione per recuperare l'autore
     const fetchAuthor = async () => {
             try {
                 const response = await getAuthor(id);
@@ -51,7 +52,7 @@ export default function Profile({search}) {
         if (author && author.email) {
           try {
             const response = await getPostAuthor(author.email);
-            setPosts(response.data);
+            setPosts(response.data); // Imposto i post nello stato
           } catch (error) {
             if (error.response && error.response.status === 404) {
             //   console.log("Nessun post trovato per questo autore");

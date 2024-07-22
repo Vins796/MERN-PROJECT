@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 export default function Post({posts}) {
-    if (!Array.isArray(posts)) {
-        return <div>Caricamento in corso...</div>;
+    if (!Array.isArray(posts)) { // Controllo se i posts sono un array
+        return <div>Caricamento in corso...</div>; // Mostro un messaggio di caricamento
     }
 
     return (

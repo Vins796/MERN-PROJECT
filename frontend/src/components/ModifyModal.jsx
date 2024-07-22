@@ -5,15 +5,15 @@ export default function ModifyModal({ post, onClose, onModify }) {
   const [modifiedPost, setModifiedPost] = useState(post);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setModifiedPost(prev => ({ ...prev, [name]: value }));
+    const { name, value } = e.target; // Prende il nome e il valore dell'input
+    setModifiedPost(prev => ({ ...prev, [name]: value })); // Imposta lo stato del post modificato
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onModify(modifiedPost);
   };
-
+  
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <motion.div className="bg-white p-8 rounded-lg"

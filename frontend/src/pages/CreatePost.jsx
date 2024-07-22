@@ -6,6 +6,7 @@ export default function CreatePost() {
 
   const navigate = useNavigate();
 
+  // Stato iniziale del post
   const [post, setPost] = useState({
     title: '',
     category: '',
@@ -22,7 +23,7 @@ export default function CreatePost() {
 
   // Recupero l'email dell'utente loggato
   useEffect(() => {
-    const fetchUserEmail = async () => {
+    const fetchUserEmail = async () => { // Funzione per recuperare l'email dell'utente loggato
       try {
         const userData = await getMe();
         // console.log(userData)
@@ -37,22 +38,22 @@ export default function CreatePost() {
 
 
   const handleChange = (e) => {
-      const {name, value} = e.target;
+      const {name, value} = e.target; // Prende il nome e il valore dell'input
       if(name === 'readTimeValue') {
-          setPost({...post, readTime: {...post.readTime, value: parseInt(value)}});
+          setPost({...post, readTime: {...post.readTime, value: parseInt(value)}}); // Imposta lo stato del post modificato
       } else {
-          setPost({...post, [name]: value});
+          setPost({...post, [name]: value}); // Imposta lo stato del post modificato
       }
   } 
 
   const handleSubmit = async (e) => {
       e.preventDefault();
       try{
-        const formData = new FormData();
-        Object.keys(post).forEach((key) => {
+        const formData = new FormData(); // Creo un nuovo FormData  
+        Object.keys(post).forEach((key) => { // Per ogni chiave del form, se il valore è presente, lo appendo al FormData
           if(key === 'readTime') {
-            formData.append("readTime[value]", post.readTime.value);
-            formData.append("readTime[unit]", post.readTime.unit);
+            formData.append("readTime[value]", post.readTime.value); // Appendo il valore della lettura
+            formData.append("readTime[unit]", post.readTime.unit); // Appendo l'unità di lettura
           } else {
             formData.append(key, post[key]);
           }
@@ -60,7 +61,7 @@ export default function CreatePost() {
         })
 
         if(coverFile) {
-          formData.append('cover', coverFile);
+          formData.append('cover', coverFile); // Appendo la copertina
         }
 
         await createPost(formData);
@@ -71,7 +72,7 @@ export default function CreatePost() {
   }
 
   const handleFileChange = (e) => {
-    setCoverFile(e.target.files[0]);
+    setCoverFile(e.target.files[0]); // Imposta lo stato della copertina
   }
 
   return (

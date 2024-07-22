@@ -49,19 +49,19 @@ export default function SinglePost() {
   const [currentUserEmail, setCurrentUserEmail] = useState('');
   // Funzione per ottenere i dati dell'utente
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserData = async () => { // Funzione per recuperare i dati dell'utente
       try {
-        const user = await getMe();
-        setCurrentUserEmail(user.email);
-        setNewComment(prevComment => ({
+        const user = await getMe(); // Richiede i dati dell'utente
+        setCurrentUserEmail(user.email); // Imposta lo stato dell'email dell'utente
+        setNewComment(prevComment => ({ // Imposta lo stato del nuovo commento
           ...prevComment,
-          name: `${user.nome} ${user.cognome}`.trim(),
-          email: user.email || ''
+          name: `${user.nome} ${user.cognome}`.trim(), // Imposta lo stato del nome dell'utente
+          email: user.email || '' // Imposta lo stato dell'email dell'utente
         }));
         // Controllo se l'utente è l'autore del post
-        setIsPostOwner(user.email === singlePost.author);
+        setIsPostOwner(user.email === singlePost.author); // Imposta lo stato se l'utente è l'autore del post
       } catch (error) {
-        console.error("Errore nel recupero dei dati utente:", error);
+          console.error("Errore nel recupero dei dati utente:", error); // Mostro un messaggio di errore
       }
     };
     fetchUserData();
@@ -69,28 +69,28 @@ export default function SinglePost() {
   
   // Funzione per ottenere sia il post che i commenti
   useEffect(() => {
-    const fetchPostAndComments = async () => {
+    const fetchPostAndComments = async () => { // Funzione per recuperare il post e i commenti  
         try{
-            const PostResponse = await getPost(id);
+            const PostResponse = await getPost(id); // Richiede il post
             setSinglePost(PostResponse.data);
             
-            const commentsResponse = await getComments(id);
+            const commentsResponse = await getComments(id); // Richiede i commenti
             // console.log(commentsResponse.data);
-            setComments(commentsResponse.data)
+            setComments(commentsResponse.data) // Imposta lo stato dei commenti
         }catch(err) {
-            console.error('Errore nella richiesta dei post', err);
+            console.error('Errore nella richiesta dei post', err); // Mostro un messaggio di errore
         }
     }
-    fetchPostAndComments();
+    fetchPostAndComments(); // Chiamo la funzione
   }, [id]);
 
   // Funzione per cancellare il post
-  const handleDeletePost = async () => {
+  const handleDeletePost = async () => { // Funzione per cancellare il post
     try {
-      console.log("Deleting post with ID:", id);
-      const response = await deletePost(id);
+      console.log("Deleting post with ID:", id); // Mostro un messaggio di conferma
+      const response = await deletePost(id); // Richiede la cancellazione del post
       // console.log("Risposta del server:", response);
-      navigate("/");
+      navigate("/"); // Navigo alla pagina principale
       
     } catch(err) {
       console.error("Errore nella cancellazione del post:", err);
@@ -98,7 +98,7 @@ export default function SinglePost() {
   };
 
   // Funzione per modificare il post
-  const handleModifySubmit = async (modifiedPost) => {
+  const handleModifySubmit = async (modifiedPost) => { // Funzione per modificare il post
     try {
       const response = await updatePost(modifiedPost, id);
       console.log("Post modificato con successo:", response);
@@ -157,9 +157,9 @@ export default function SinglePost() {
   // Funzione per navigare al profilo dell'autore
   const navigateToProfile = async (email) => {
     try {
-      const response = await getAuthorByEmail(email);
-      if (response && response.data && response.data._id) {
-        const authorId = response.data._id;
+      const response = await getAuthorByEmail(email); // Richiede l'autore del post 
+      if (response && response.data && response.data._id) { // Controllo se l'autore è stato trovato
+        const authorId = response.data._id; // Imposta lo stato dell'ID dell'autore
         navigate(`/profile/${authorId}`);
       } else {
         // Autore non trovato
