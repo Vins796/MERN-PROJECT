@@ -4,9 +4,8 @@ import { Dropdown, DropdownDivider, DropdownHeader, DropdownItem } from "flowbit
 
 import SearchInput from "./SearchInput";
 import { useEffect, useState } from "react";
-import { getAuthorEmail, getUserData } from "../services/api";
+import { getAuthorEmail } from "../services/api";
 import { Menu, X } from 'lucide-react';
-import defaultAvatar from '../assets/avatar.jpeg';
 
 export default function Navbar({search, handleChange}) {
 
@@ -20,73 +19,32 @@ export default function Navbar({search, handleChange}) {
 
     // EFFETTO CHE CONTROLLA LOGIN
     useEffect(() => {
-      // EFFETTO CHE CONTROLLA LOGIN
-      const checkLoginStatus = async () => {
-        const token = localStorage.getItem("token");
-        if (token) {
-          try {
-            const userData = await getUserData(); // Richiede i dati dell'utente
-            console.log("Dati utente ricevuti in Navbar:", userData);
-            setIsLoggedIn(true); // Imposta lo stato di login a true
-            setUserData(userData); // Imposta i dati dell'utente nello stato
-            localStorage.setItem("userData", JSON.stringify(userData));
-          } catch (error) {
-            console.error("Token non valido o errore nel recupero dei dati:", error);
-            localStorage.removeItem("token");
-            localStorage.removeItem("userData");
-            setIsLoggedIn(false);
-            setUserData(null);
-          }
-        } else {
-          setIsLoggedIn(false);
-          setUserData(null);
-        }
+      const checkLoginStatus = () => {
+        const token = localStorage.getItem("token"); // Controllo se il token è presente nel localStorage
+        const storedUserData = JSON.parse(localStorage.getItem("userData")); // Controllo se i dati dell'utente sono presenti nel localStorage
+        setIsLoggedIn(!!token); // Imposto lo stato di login a true se il token è presente nel localStorage
+        setUserData(storedUserData); // Imposto i dati dell'utente nello stato
+        // console.log("Stored user data:", storedUserData);
       };
     
-      checkLoginStatus();
-    
-      window.addEventListener("storage", checkLoginStatus); // Aggiunge un listener che aggiorna lo stato di login quando il token viene modificato
-      window.addEventListener("loginStateChange", checkLoginStatus); // Aggiunge un listener che aggiorna lo stato di login quando il token viene modificato
+      checkLoginStatus(); // Chiamo la funzione che controlla lo stato di login
+      window.addEventListener("storage", checkLoginStatus); // Aggiungo un listener che aggiorna lo stato di login quando il token viene modificato
     
       return () => {
-        window.removeEventListener("storage", checkLoginStatus);
-        window.removeEventListener("loginStateChange", checkLoginStatus);
+        window.removeEventListener("storage", checkLoginStatus); // Rimuovo il listener quando il componente viene rimosso
       };
-    }, []); 
+    }, []);
 
     // EFFETTO CHE OTTENE DATI AUTORI
-    // useEffect(() => {
-    //   const fetchAuthor = async () => {
-    //     // console.log("fetchAuthor called, userData:", userData);
-    //     if (userData && userData.email) {
-    //       try {
-    //         // console.log("Fetching author data for email:", userData.email);
-    //         const authorData = await getAuthorEmail(userData.email); // Richiede i dati dell'autore
-    //         // console.log("Author data received:", authorData);
-    //         // console.log("Avatar URL:", authorData && authorData.avatar ? authorData.avatar : avatarLogo);
-    //         if (authorData) {
-    //           setAuthor(authorData);
-    //         } else {
-    //           console.error("Dati dell'autore non validi");
-    //         }
-    //       } catch (error) {
-    //         console.error("Errore nella richiesta dell'autore", error);
-    //       }
-    //     } else {
-    //       // console.log("userData o email mancante");
-    //     }
-    //   };
-      
-    //   if (isLoggedIn) {
-    //     fetchAuthor();
-    //   }
-    // }, [userData, isLoggedIn]);
     useEffect(() => {
       const fetchAuthor = async () => {
+        // console.log("fetchAuthor called, userData:", userData);
         if (userData && userData.email) {
           try {
-            const authorData = await getAuthorEmail(userData.email);
-            console.log("Dati autore ricevuti:", authorData);
+            // console.log("Fetching author data for email:", userData.email);
+            const authorData = await getAuthorEmail(userData.email); // Richiede i dati dell'autore
+            // console.log("Author data received:", authorData);
+            // console.log("Avatar URL:", authorData && authorData.avatar ? authorData.avatar : avatarLogo);
             if (authorData) {
               setAuthor(authorData);
             } else {
@@ -95,6 +53,8 @@ export default function Navbar({search, handleChange}) {
           } catch (error) {
             console.error("Errore nella richiesta dell'autore", error);
           }
+        } else {
+          // console.log("userData o email mancante");
         }
       };
       
@@ -118,7 +78,6 @@ export default function Navbar({search, handleChange}) {
       setUserData(null);
       setAuthor(null);
       navigate("/login"); // Reindirizzo alla pagina di login
-      window.dispatchEvent(new Event("loginStateChange"));
     };   
     
   return (
@@ -140,13 +99,12 @@ export default function Navbar({search, handleChange}) {
                     <Dropdown
                         label={<img 
                           alt="User settings"
-                          src={author && author.avatar ? `${process.env.REACT_APP_API_URL}/${author.avatar}` : defaultAvatar} // ci mette un po' di tempo per caricare l'immagine
+                          src={author && author.avatar ? author.avatar : ' '} // ci mette un po' di tempo per caricare l'immagine
                           rounded="true"
                           className="ms-3 sm:ms-5 h-8 sm:h-12 rounded-full"
                           onError={(e) => {
-                            console.error("Errore nel caricamento dell'avatar:", e);
                             e.target.onerror = null; 
-                            e.target.src = defaultAvatar;
+                            e.target.src = '';
                           }}
                         />}
                         arrowIcon={false}
