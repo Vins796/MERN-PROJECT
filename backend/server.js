@@ -51,7 +51,7 @@ const corsOptions = {
     // Queste sono gli URL da cui il nostro frontend farà richieste al backend.
     const whitelist = [
       'http://localhost:5173', // Frontend in sviluppo
-      'https://mern-project-gamma-five.vercel.app', // Frontend in produzione (prendere da vercel!)
+      'https://mern-project-gamma-five.vercel.app/', // Frontend in produzione (prendere da vercel!)
       'https://mern-project-u054.onrender.com' // URL del backend (prendere da render!)
     ];
     
