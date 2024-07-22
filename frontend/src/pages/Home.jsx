@@ -100,14 +100,14 @@ export default function Home({search}) {
     return (
         <>
             {isLoggedIn ? (           
-                <main className="relative max-w-8xl z-0 min-h-screen mx-auto bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200">
+                <main className="relative z-0 min-h-screen mx-auto bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-white dark:via-gray-100 dark:to-gray-200">
                     <DarkThemeToggle className="mr-2 sm:mr-4 border border-black fixed bottom-4 right-4 sm:bottom-[50px] sm:right-[50px] z-10"/>
                     <div className="pt-24 sm:pt-24 md:pt-28 lg:pt-32">
                         <h1 className="lg:mt-5 text-center text-2xl sm:text-4xl font-mono text-white dark:text-black">
                             Benvenuto<span className="text-[#01FF84] dark:text-black">{authorData?.nome ? ` ${authorData.nome}!` : '!'}</span>
                         </h1>
                     </div>
-                    <div className="mt-0 sm:mt-0 md:mt-0 lg:mt-0 mb-[50px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-0">
+                    <div className="max-w-8xl mt-0 sm:mt-0 md:mt-0 lg:mt-0 mb-[50px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-0">
                         {posts.length === 0 ? (
                             Array(limit).fill().map((_, index) => (
                                 <PostSkeleton key={index}/>
