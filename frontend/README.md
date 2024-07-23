@@ -39,3 +39,5 @@ Questo progetto è un'applicazione web full-stack per un blog, sviluppata utiliz
 ### Configurazione e Avvio
 - **frontend**: cd frontend && npm run dev
 - **backend**: cd backend && node server.js
+
+https://mern-project-gamma-five.vercel.app
